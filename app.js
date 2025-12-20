@@ -47,22 +47,44 @@ function closeConfirmModal() {
 }
 
 // =======================
-// CARD BUILDER
+// CARD BUILDER (VERSI YANG SUDAH DIPERBAIKI)
 // =======================
 function buildCard(room, key, alert) {
   const ts = new Date(alert.createdAt).toLocaleString();
   const card = document.createElement('div');
-  // Tambah class warna berdasarkan type (merah/putih/kuning sesuai konsep tombol)
+  
+  // Tambah class warna berdasarkan type
   const colorClass = alert.type === 'infus' ? 'red' : alert.type === 'nonmedis' ? 'white' : alert.type === 'medis' ? 'yellow' : '';
   card.className = `card ${colorClass} ${alert.status === 'Ditangani' ? 'handled' : 'active'}`;
 
+  // PERBAIKAN: Buat struktur HTML yang sesuai dengan CSS
   card.innerHTML = `
     <div class="details">
-      <div><b>Ruang</b> : ${room.replace('room_', '')}</div>
-      <div><b>Jenis</b> : ${alert.type}</div>
-      <div><b>Status</b> : ${alert.status || 'Aktif'}</div>
-      <div><b>Waktu</b> : ${ts}</div>
-      <div><b>Pesan</b> : ${alert.message || ''}</div>
+      <div class="row">
+        <span class="label">Ruang</span>
+        <span class="colon">:</span>
+        <span class="value">${room.replace('room_', '')}</span>
+      </div>
+      <div class="row">
+        <span class="label">Jenis</span>
+        <span class="colon">:</span>
+        <span class="value">${alert.type}</span>
+      </div>
+      <div class="row">
+        <span class="label">Status</span>
+        <span class="colon">:</span>
+        <span class="value">${alert.status || 'Aktif'}</span>
+      </div>
+      <div class="row">
+        <span class="label">Waktu</span>
+        <span class="colon">:</span>
+        <span class="value">${ts}</span>
+      </div>
+      <div class="row">
+        <span class="label">Pesan</span>
+        <span class="colon">:</span>
+        <span class="value">${alert.message || '-'}</span>
+      </div>
     </div>
     <div class="footer">
       <button class="ack-btn" ${alert.status === 'Ditangani' ? 'disabled' : ''}>
