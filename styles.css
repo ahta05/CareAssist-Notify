@@ -22,8 +22,8 @@
   --primary-color: #0A4D68; /* Navy Blue */
   --secondary-color: #0077b6; /* Blue Ocean */
   --accent-color: #48cae4; /* Sky Blue */
-
-  --font-family: 'Poppins', 'Roboto', 'Segoe UI', sans-serif;
+ 
+  --font-family: 'Playfair Display', 'Georgia', serif;
   --border-radius: 16px;
   --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
   --shadow-hover: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
@@ -82,7 +82,7 @@ h1 {
 }
 
 .brand-icon {
-  height: 0.8em; /* Ukuran icon mengikuti ukuran font h1 */
+  height: 1em; /* Ukuran icon mengikuti ukuran font h1 */
   vertical-align: middle; /* Sejajarkan icon dengan teks */
   margin-right: 12px;
 }
