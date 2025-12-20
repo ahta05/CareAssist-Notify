@@ -8,7 +8,6 @@
 
 /* 2. DEFINISI VARIABEL TEMA (PALET BIRU UNTUK UI UMUM) */
 :root {
-  /* Gradien Background dari Biru Langit ke Abu-abu Silver */
   --bg-color-start: #e0eafc;
   --bg-color-end: #cfdef3;
   --bg-color-3: #f0f4f8;
@@ -32,7 +31,6 @@
 /* 3. BACKGROUND ANIMASI & TIPOGRAFI */
 body {
   font-family: var(--font-family);
-  /* Background Gradien Biru Animasi */
   background: linear-gradient(-45deg, var(--bg-color-start), var(--bg-color-end), var(--bg-color-3), var(--bg-color-4));
   background-size: 400% 400%;
   animation: gradientShift 15s ease infinite;
@@ -40,7 +38,6 @@ body {
   margin: 0;
   padding: 20px;
   line-height: 1.6;
-  /* Layout untuk Sticky Footer */
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -55,7 +52,6 @@ body {
 h1 {
   font-size: 3.5rem;
   text-align: center;
-  /* Teks Gradien Biru */
   background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -63,36 +59,35 @@ h1 {
   margin-bottom: 40px;
   font-weight: 800;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-  /* Gunakan Font Serif untuk Judul Utama */
   font-family: 'Playfair Display', var(--font-family);
 }
 
 /* 4. GAYA UNTUK ELEMEN BARU DI HTML */
 .container {
-  flex: 1; /* Ini akan mendorong footer ke bawah */
+  flex: 1;
 }
 
 .tagline {
   text-align: center;
   font-size: 1.1rem;
   color: var(--text-muted);
-  margin-top: -15px; /* Jarak rapat dengan judul */
+  margin-top: -15px;
   margin-bottom: 30px;
   font-weight: 400;
 }
 
 .brand-icon {
-  height: 1.2em; /* Ukuran icon mengikuti ukuran font h1 */
-  vertical-align: middle; /* Sejajarkan icon dengan teks */
+  height: 1.2em;
+  vertical-align: middle;
   margin-right: 12px;
 }
 
 .site-footer {
   text-align: center;
-  font-style: italic; /* Membuat font italic */
+  font-style: italic;
   color: var(--text-muted);
   padding: 20px 0;
-  margin-top: auto; /* Pastikan footer menempel di bawah */
+  margin-top: auto;
   font-size: 0.9rem;
 }
 
@@ -106,7 +101,6 @@ nav button {
   padding: 14px 28px;
   border: none;
   border-radius: 50px;
-  /* Gradien Tombol Biru */
   background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   color: #FFFFFF;
   font-weight: bold;
@@ -187,46 +181,44 @@ nav button:hover {
 
 /* 6. WARNA PRIORITAS (DIKEMBALIKAN KE ASLI) */
 .card.red {
-  border-left: 6px solid #e74c3c; /* Merah Darurat */
+  border-left: 6px solid #e74c3c;
   background: rgba(231, 76, 60, 0.1);
 }
 .card.white {
-  border-left: 6px solid #ecf0f1; /* Putih/Silver untuk Rendah */
+  border-left: 6px solid #ecf0f1;
   background: rgba(236, 240, 241, 0.1);
 }
 .card.yellow {
-  border-left: 6px solid #f1c40f; /* Kuning untuk Sedang */
+  border-left: 6px solid #f1c40f;
   background: rgba(241, 196, 15, 0.1);
 }
-
-/* Menyesuaikan class prioritas yang lebih spesifik (SESUAI KODE ASLI ANDA) */
 .card.kondisi.infus { 
-  border-left: 6px solid #f1c40f; /* Kuning */
+  border-left: 6px solid #f1c40f;
   background: rgba(241, 196, 15, 0.1);
 }
 .card.pertolongan.medis { 
-  border-left: 6px solid #e74c3c; /* Merah */
+  border-left: 6px solid #e74c3c;
   background: rgba(231, 76, 60, 0.1);
 }
 .card.pertolongan.non-medis { 
-  border-left: 6px solid #2ecc71; /* Hijau */
+  border-left: 6px solid #2ecc71;
   background: rgba(46, 204, 113, 0.1);
 }
 
-/* 7. DETAIL & TEKS */
-.details { flex: 1; }
-.details .row { display: flex; align-items: center; margin: 8px 0; }
-.details .label {
-  font-weight: 600;
-  min-width: 120px;
-  color: var(--text-muted);
-}
-.details .colon { margin: 0 8px; color: var(--text-muted); }
-.details .value {
+/* 7. GAYA SEDERHANA UNTUK DETAIL KARTU (PERBAIKAN BUG) */
+.card-details-simple {
   flex: 1;
   color: var(--text-color);
-  font-weight: 500;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.card-details-simple div {
+  margin-bottom: 8px;
+}
+.card-details-simple b {
+  color: var(--text-muted);
+  min-width: 80px;
+  display: inline-block;
 }
 
 .footer { margin-left: 20px; }
@@ -236,7 +228,6 @@ nav button:hover {
   border: none;
   border-radius: 50px;
   cursor: pointer;
-  /* Gradien Tombol Aksi */
   background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   color: #FFFFFF;
   font-weight: bold;
@@ -311,9 +302,7 @@ nav button:hover {
   body { padding: 15px; }
   h1 { font-size: 2.5rem; }
   .card { flex-direction: column; align-items: flex-start; padding: 20px; }
-  .details .row { flex-direction: row; align-items: flex-start; margin: 6px 0; }
-  .details .label { min-width: 110px; }
-  .details .value { word-wrap: break-word; overflow-wrap: break-word; }
+  .card-details-simple { width: 100%; }
   .footer { margin-left: 0; margin-top: 16px; width: 100%; }
   .footer button { width: 100%; }
   nav button { margin: 5px; padding: 12px 20px; font-size: 0.9rem; }
@@ -326,23 +315,19 @@ nav button:hover {
 /* ==========================================
    GAYA UNTUK MODAL KONFIRMASI CUSTOM (PERBAIKAN)
    ========================================== */
-
-/* Kontainer utama modal */
 .modal {
-  display: none; /* disembunyikan secara default */
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1000; /* Z-index tertinggi untuk menutupi semua */
+  z-index: 1000;
   justify-content: center;
   align-items: center;
 }
-
-/* Overlay latar belakang yang gelap */
 .modal-overlay {
-  position: absolute; /* Gunakan absolute di dalam modal */
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -351,11 +336,9 @@ nav button:hover {
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
 }
-
-/* Isi dari modal */
 .modal-content {
-  position: relative; /* PENTING: agar berada di atas overlay */
-  z-index: 1; /* PENTING: naikkan satu lapisan dari overlay */
+  position: relative;
+  z-index: 1;
   background: var(--card-bg);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-hover);
@@ -366,22 +349,13 @@ nav button:hover {
   width: 90%;
   animation: modalFadeIn 0.3s ease-out;
 }
-
 @keyframes modalFadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
 }
-
 .modal-header, .modal-body, .modal-footer {
   padding: 20px 24px;
 }
-
 .modal-header {
   border-bottom: 1px solid var(--border-color);
 }
@@ -390,7 +364,6 @@ nav button:hover {
   color: var(--primary-color);
   font-weight: 600;
 }
-
 .modal-body {
   color: var(--text-color);
 }
@@ -398,15 +371,12 @@ nav button:hover {
   margin: 0;
   line-height: 1.6;
 }
-
 .modal-footer {
   border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: flex-end;
   gap: 12px;
 }
-
-/* Tombol di dalam modal */
 .modal-footer button {
   padding: 10px 20px;
   border: none;
@@ -415,7 +385,6 @@ nav button:hover {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-
 .btn-cancel {
   background: #e9ecef;
   color: var(--text-color);
@@ -423,33 +392,12 @@ nav button:hover {
 .btn-cancel:hover {
   background: #dee2e6;
 }
-
 .btn-confirm-delete {
-  background: #dc3545; /* Merah untuk aksi berbahaya */
+  background: #dc3545;
   color: #FFFFFF;
 }
 .btn-confirm-delete:hover {
   background: #c82333;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
-}
-/* ==========================================
-   GAYA SEDERHANA UNTUK DETAIL KARTU (PERBAIKAN BUG)
-   ========================================== */
-
-.card-details-simple {
-  flex: 1;
-  color: var(--text-color); /* Pastikan warna teks benar */
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-.card-details-simple div {
-  margin-bottom: 8px; /* Beri jarak antar baris */
-}
-
-.card-details-simple b {
-  color: var(--text-muted); /* Warna untuk label (Ruang, Jenis, dll) */
-  min-width: 80px; /* Lebarkan label agar rapi */
-  display: inline-block;
 }
