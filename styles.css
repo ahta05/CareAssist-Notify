@@ -82,7 +82,7 @@ h1 {
 }
 
 .brand-icon {
-  height: 1.2em; /* Ukuran icon mengikuti ukuran font h1 */
+  height: 0.8em; /* Ukuran icon mengikuti ukuran font h1 */
   vertical-align: middle; /* Sejajarkan icon dengan teks */
   margin-right: 12px;
 }
