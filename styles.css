@@ -1,20 +1,55 @@
+/* ==========================================
+   CARE ASSIST NOTIFY - GAYA BARU
+   Tema: Modern, Elegan, & Profesional
+   ========================================== */
+
+/* 1. DEFINISI VARIABEL TEMA (Mudah diubah kembali) */
+:root {
+  --bg-color: #F8F9FA;
+  --card-bg: #FFFFFF;
+  --text-color: #212529;
+  --text-muted: #6c757d;
+  --border-color: #dee2e6;
+
+  --primary-color: #0A4D68; /* Navy Blue - Profesional & Tenang */
+  --secondary-color: #05BFDB; /* Teal - Modern & Segar */
+  --accent-color: #339af0; /* Light Blue - Aksen interaktif */
+
+  --priority-high-bg: #FDF2F2;
+  --priority-high-border: #E63946; /* Merah Darurat */
+  --priority-high-text: #D62828;
+
+  --priority-medium-bg: #FFF4E6;
+  --priority-medium-border: #FF8A00; /* Oranye Medis */
+  --priority-medium-text: #E85D04;
+
+  --priority-low-bg: #F0FDF4;
+  --priority-low-border: #16A34A; /* Hijau Non-Medis */
+  --priority-low-text: #15803D;
+
+  --font-family: 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --border-radius: 12px;
+  --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* 2. GAYA DASAR & TIPOGRAFI */
 body {
-  font-family: 'Roboto', sans-serif;
-  background: #0d0d0d;
-  color: #ffffff;
+  font-family: var(--font-family);
+  background: var(--bg-color);
+  color: var(--text-color);
   margin: 0;
   padding: 20px;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 h1 {
   font-size: 3rem;
   text-align: center;
-  color: #ffffff;
+  color: var(--primary-color); /* Warna utama brand */
   margin-bottom: 32px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  /* Dihilangkan untuk kesan lebih elegan: text-transform, letter-spacing */
 }
 
 nav {
@@ -26,59 +61,76 @@ nav button {
   margin: 0 12px;
   padding: 12px 24px;
   border: none;
-  border-radius: 8px;
-  background: #00ffff;
-  color: #0d0d0d;
+  border-radius: var(--border-radius);
+  background: var(--primary-color); /* Tombol utama dengan warna brand */
+  color: #FFFFFF;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 255, 255, 0.2);
+  box-shadow: var(--shadow);
 }
 nav button:hover {
-  background: #009999;
-  color: #fff;
+  background: var(--secondary-color);
+  color: #FFFFFF;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 255, 255, 0.3);
+  box-shadow: var(--shadow-hover);
 }
 
+/* 3. KARTU NOTIFIKASI UTAMA */
 .card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 24px; /* Diperbesar untuk kesan lebih lapang */
   margin: 16px 0;
-  background: #1a1a1a;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: box-shadow 0.3s ease;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+  border-left: 6px solid transparent; /* Default, akan di-override */
 }
 .card:hover {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-3px); /* Efek hover lebih dramatis */
 }
-.card.active { /* Glow permanen untuk alert aktif */
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+.card.active { 
+  /* Glow halus yang elegan, bukan neon */
+  box-shadow: 0 0 20px rgba(10, 77, 104, 0.4);
 }
-.card.handled { /* Redup untuk alert ditangani */
-  opacity: 0.6;
-  box-shadow: none;
+.card.handled { 
+  opacity: 0.5;
+  background: #e9ecef;
 }
-/* Tambahan: Warna card berdasarkan type alert (merah/putih/kuning) */
+
+/* 4. WARNA PRIORITAS (Menyesuaikan class yang ada) */
 .card.red {
-  border-left: 6px solid #e74c3c; /* Merah untuk darurat */
-  background: rgba(231, 76, 60, 0.1); /* Subtle red background */
+  border-left-color: var(--priority-high-border);
+  background: var(--priority-high-bg);
 }
 .card.white {
-  border-left: 6px solid #ecf0f1; /* Putih untuk sedang */
-  background: rgba(236, 240, 241, 0.1); /* Subtle white background */
+  border-left-color: var(--priority-low-border); /* Asumsikan 'white' adalah prioritas rendah */
+  background: var(--priority-low-bg);
 }
 .card.yellow {
-  border-left: 6px solid #f1c40f; /* Kuning untuk rendah */
-  background: rgba(241, 196, 15, 0.1); /* Subtle yellow background */
+  border-left-color: var(--priority-medium-border);
+  background: var(--priority-medium-bg);
 }
-.card.kondisi.infus { border-left: 6px solid #f1c40f; }
-.card.pertolongan.medis { border-left: 6px solid #e74c3c; }
-.card.pertolongan.non-medis { border-left: 6px solid #2ecc71; }
 
+/* Menyesuaikan class prioritas yang lebih spesifik */
+.card.kondisi.infus { 
+  border-left-color: var(--priority-high-border); 
+  background: var(--priority-high-bg);
+}
+.card.pertolongan.medis { 
+  border-left-color: var(--priority-medium-border); 
+  background: var(--priority-medium-bg);
+}
+.card.pertolongan.non-medis { 
+  border-left-color: var(--priority-low-border); 
+  background: var(--priority-low-bg);
+}
+
+/* 5. DETAIL & TEKS DI DALAM KARTU */
 .details {
   flex: 1;
 }
@@ -90,14 +142,16 @@ nav button:hover {
 .details .label {
   font-weight: bold;
   min-width: 120px;
-  color: #cccccc;
+  color: var(--text-muted); /* Warna label yang lebih lembut */
 }
 .details .colon {
   margin: 0 8px;
-  color: #888888;
+  color: var(--text-muted);
 }
 .details .value {
   flex: 1;
+  color: var(--text-color);
+  font-weight: 500;
 }
 
 .footer {
@@ -105,49 +159,48 @@ nav button:hover {
 }
 
 .card button {
-  padding: 10px 18px;
+  padding: 12px 20px; /* Padding sedikit lebih besar */
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  background: #00ffff;
-  color: #0d0d0d;
+  background: var(--primary-color);
+  color: #FFFFFF;
   font-weight: bold;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 255, 255, 0.2);
+  box-shadow: var(--shadow);
 }
 .card button:hover {
-  background: #009999;
-  color: #fff;
+  background: var(--accent-color);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 255, 255, 0.3);
+  box-shadow: var(--shadow-hover);
 }
 .card button:disabled {
-  background: #555;
-  color: #aaa;
+  background: #adb5bd;
+  color: #f8f9fa;
   cursor: not-allowed;
   box-shadow: none;
 }
 
-/* Gaya untuk page history di desktop */
+/* 6. HALAMAN RIWAYAT (HISTORY) */
 .history-actions {
   margin: 16px 0;
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap; /* Biar wrap jika perlu di desktop */
+  flex-wrap: wrap;
 }
 
 .history-actions label {
   font-weight: bold;
-  color: #cccccc;
+  color: var(--text-color);
 }
 
 .history-actions input[type="date"] {
-  padding: 8px 12px;
+  padding: 10px 12px;
   border-radius: 6px;
-  border: none;
-  background: #1a1a1a;
-  color: #ffffff;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-color);
   font-size: 1rem;
 }
 
@@ -156,176 +209,123 @@ nav button:hover {
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  background: #00ffff;
-  color: #0d0d0d;
+  background: var(--primary-color);
+  color: #FFFFFF;
   font-weight: bold;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 255, 255, 0.2);
+  box-shadow: var(--shadow);
 }
 .history-actions button:hover {
-  background: #009999;
-  color: #fff;
+  background: var(--secondary-color);
+  color: #FFFFFF;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 255, 255, 0.3);
+  box-shadow: var(--shadow-hover);
 }
 
 .history-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 16px;
-  background: #1a1a1a;
-  border-radius: 8px;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
   overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 .history-table th,
 .history-table td {
-  padding: 12px 16px;
+  padding: 14px 16px; /* Padding lebih lega */
   text-align: left;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .history-table th {
-  background: #222;
-  color: #00ffff;
-  font-weight: bold;
+  background: var(--primary-color);
+  color: #FFFFFF;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
 }
 
 .history-table tr:nth-child(even) {
-  background: #141414;
+  background: #f8f9fa;
 }
 
 .history-table tr:hover {
-  background: #222;
+  background: #e9ecef;
 }
 
+/* 7. RESPONSIVE UNTUK MOBILE */
 @media (max-width: 600px) {
   body {
     padding: 16px;
   }
   h1 {
-    font-size: 2.5rem;
-    letter-spacing: 1px;
+    font-size: 2.2rem;
   }
   .card {
-    font-size: 1rem;
     flex-direction: column;
     align-items: flex-start;
-    padding: 16px;
+    padding: 18px;
   }
 
-  /* --- Formasi row tetap horizontal di mobile --- */
   .details .row {
-    display: flex;
-    flex-direction: row;   /* selalu horizontal */
-    align-items: flex-start; /* biar value panjang tetap sejajar atas */
+    flex-direction: row;
+    align-items: flex-start;
     margin: 6px 0;
   }
   .details .label {
-    font-weight: bold;
-    min-width: 120px; /* konsistensi lebar label */
-    color: #cccccc;
-    margin-bottom: 0; /* jangan turun */
+    min-width: 110px;
+    color: var(--text-muted);
   }
   .details .colon {
     margin: 0 8px;
-    color: #888888;
-    display: inline; /* colon tetap muncul */
+    color: var(--text-muted);
   }
   .details .value {
     flex: 1;
-    word-wrap: break-word;   /* biar teks panjang otomatis turun */
+    word-wrap: break-word;
     overflow-wrap: break-word;
   }
 
   .footer {
     margin-left: 0;
     margin-top: 16px;
+    width: 100%;
   }
+  .footer button {
+    width: 100%;
+  }
+  
   .card.active {
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(10, 77, 104, 0.3);
   }
   nav button {
-    margin: 0 6px;
-    padding: 10px 20px;
+    margin: 5px;
+    padding: 10px 18px;
+    font-size: 0.9rem;
   }
   
-  /* Gaya untuk page history di mobile - diperbaiki untuk rapi */
   .history-actions {
-    margin: 16px 0;
-    display: flex;
-    flex-direction: column; /* Ubah ke kolom untuk mobile agar lebih rapi */
-    align-items: flex-start; /* Ubah ke flex-start agar elemen tidak stretch penuh, lebih proporsional */
-    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
   }
   
-  .history-actions label {
-    font-weight: bold;
-    color: #cccccc;
-    margin: 0; /* Reset semua margin untuk rata kiri penuh */
-    text-align: left; /* Pastikan rata kiri */
-    margin-left: 0 !important; /* Override inline style margin-left:20px dari HTML */
-  }
-  
-  .history-actions input[type="date"] {
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: none;
-    background: #1a1a1a;
-    color: #ffffff;
-    font-size: 1rem;
-    width: 90%; /* Kurangi dari 100% ke 90% untuk proporsi lebih ideal, tidak terlalu penuh horizontal */
-    max-width: 300px; /* Tambah max-width untuk batas maksimal, agar tidak terlalu lebar di layar besar */
-  }
-  
+  .history-actions label,
+  .history-actions input[type="date"],
   .history-actions button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    background: #00ffff;
-    color: #0d0d0d;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 255, 255, 0.2);
-    width: 90%; /* Kurangi dari 100% ke 90% untuk proporsi lebih ideal */
-    max-width: 300px; /* Tambah max-width untuk konsistensi */
-  }
-  .history-actions button:hover {
-    background: #009999;
-    color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 255, 255, 0.3);
+    width: 100%;
+    max-width: none;
+    margin-left: 0 !important;
   }
   
   .history-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 16px;
-    background: #1a1a1a;
-    border-radius: 8px;
-    overflow: hidden;
-    font-size: 0.9rem; /* Sedikit kecilkan font untuk mobile */
+    font-size: 0.9rem;
   }
   
   .history-table th,
   .history-table td {
-    padding: 10px 12px; /* Kurangi padding untuk mobile */
-    text-align: left;
-    border-bottom: 1px solid #333;
-  }
-  
-  .history-table th {
-    background: #222;
-    color: #00ffff;
-    font-weight: bold;
-  }
-  
-  .history-table tr:nth-child(even) {
-    background: #141414;
-  }
-  
-  .history-table tr:hover {
-    background: #222;
+    padding: 12px 10px;
   }
 }
