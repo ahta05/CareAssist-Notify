@@ -3,35 +3,101 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nurse Alert Login</title>
+  <title>CareAssist Notify - Login</title>
 
-  <link rel="icon" href="favicon.png">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
+    /* ==========================================
+       CARE ASSIST NOTIFY - GAYA LOGIN
+       Tema: Elegan Blue Spectrum + Glassmorphism
+       ========================================== */
+
+    /* 1. IMPOR FONT & VARIABEL TEMA (SAMA DARI DASHBOARD) */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap');
+
+    :root {
+      --bg-color-start: #e0eafc;
+      --bg-color-end: #cfdef3;
+      --bg-color-3: #f0f4f8;
+      --bg-color-4: #d9e2ec;
+
+      --card-bg: rgba(255, 255, 255, 0.75);
+      --text-color: #212529;
+      --text-muted: #495057;
+      --border-color: rgba(255, 255, 255, 0.3);
+
+      --primary-color: #0A4D68;
+      --secondary-color: #0077b6;
+      --accent-color: #48cae4;
+
+      --font-family: 'Poppins', 'Roboto', 'Segoe UI', sans-serif;
+      --border-radius: 16px;
+      --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+      --shadow-hover: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
+    }
+
+    /* 2. BACKGROUND & LAYOUT UTAMA */
     body {
-      background: #000000;
-      font-family: 'Poppins', sans-serif;
+      font-family: var(--font-family);
+      background: linear-gradient(-45deg, var(--bg-color-start), var(--bg-color-end), var(--bg-color-3), var(--bg-color-4));
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      color: #ffffff;
     }
 
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* 3. HEADER & BRANDING */
+    .branding-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .brand-icon {
+      height: 80px; /* Ukuran icon di login */
+      vertical-align: middle;
+      margin-bottom: 15px;
+    }
+    .branding-header h1 {
+      font-family: 'Playfair Display', var(--font-family);
+      font-size: 3.5rem;
+      background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0;
+      font-weight: 700;
+    }
+    .branding-header p {
+      color: var(--text-muted);
+      margin-top: 10px;
+      font-size: 1.1rem;
+    }
+
+    /* 4. KONTAINER LOGIN (GLASSMORPHISM) */
     .login-container {
-      background: rgba(0, 0, 0, 0.9);
+      background: var(--card-bg);
       backdrop-filter: blur(10px);
-      border: 2px solid #00FFFF;
-      border-radius: 15px;
-      box-shadow: 0 0 10px #00FFFF, 0 0 20px #00FFFF;
-      padding: 2rem;
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 2.5rem;
       width: 100%;
-      max-width: 400px;
-      animation: fadeIn 0.8s ease-in;
+      max-width: 420px;
+      animation: fadeIn 0.8s ease-out;
     }
 
     @keyframes fadeIn {
@@ -39,103 +105,118 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    .login-container h2 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 30px;
+      font-weight: 600;
+    }
+
+    /* 5. FORM ELEMENTS */
     .input-group {
-      position: relative;
       margin-bottom: 1.5rem;
     }
 
-    .input-group i {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #00FFFF;
+    .input-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-color);
     }
 
     .input-group input {
-      padding-left: 2.5rem;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid #00FFFF;
-      color: #ffffff;
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.5);
+      color: var(--text-color);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-sizing: border-box; /* Penting agar padding tidak menambah lebar */
     }
-
     .input-group input:focus {
-      box-shadow: 0 0 5px #00FFFF;
+      outline: none;
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.2);
     }
 
     .btn-login {
-      background: #00FFFF;
-      color: #000000;
-      box-shadow: 0 0 10px #00FFFF;
-      transition: all 0.3s ease;
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+      color: #FFFFFF;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 4px 15px rgba(10, 77, 104, 0.4);
     }
-
     .btn-login:hover {
-      box-shadow: 0 0 15px #00FFFF, 0 0 25px #00FFFF;
       transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(10, 77, 104, 0.6);
+    }
+    .btn-login:disabled {
+      background: #adb5bd;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
     }
 
+    /* 6. PESAN ERROR & LOADING */
     .error-msg {
-      color: #ff6b6b;
-      font-size: 0.875rem;
+      color: #dc3545; /* Merah standar untuk error */
+      font-size: 0.9rem;
       margin-top: 1rem;
       text-align: center;
     }
-
     .loading {
       display: none;
-      color: #00FFFF;
-      font-size: 0.875rem;
+      color: var(--secondary-color);
+      font-size: 0.9rem;
       margin-top: 1rem;
       text-align: center;
     }
 
-    /* Hilangkan glow teks */
-    header h1,
-    header p,
-    footer,
-    .login-container h2 {
-      text-shadow: none !important;
+    /* 7. FOOTER */
+    .site-footer {
+      text-align: center;
+      font-style: italic;
+      color: var(--text-muted);
+      padding: 20px 0;
+      margin-top: auto;
+      font-size: 0.9rem;
     }
   </style>
 </head>
 
 <body>
 
-  <header class="text-center mb-8 flex flex-col items-center justify-center">
-    <img src="icon.png"
-         alt="Nurse Alert Icon"
-         class="w-28 h-28 mb-4 object-contain">
-
-    <h1 class="text-4xl font-bold text-[#00FFFF]">
-        Nurse Alert
-    </h1>
-
-    <p class="mt-2">Login Untuk Akses Dashboard Informasi Pasien Alert</p>
-</header>
+  <header class="branding-header">
+    <img src="icon.png" alt="CareAssist Notify Icon" class="brand-icon">
+    <h1>CareAssist Notify</h1>
+    <p>Login Untuk Mengakses Dashboard</p>
+  </header>
 
   <div class="login-container">
-    <h2 class="text-2xl font-semibold text-center text-cyan-400 mb-6">
-      <i class="fas fa-sign-in-alt"></i> Masuk Akun
-    </h2>
+    <h2><i class="fas fa-user-md"></i> Masuk Akun</h2>
 
-    <form id="login-form" class="space-y-4">
+    <!-- ID dan Struktur Form TIDAK DIUBAH -->
+    <form id="login-form">
       <div class="input-group">
-        <i class="fas fa-envelope"></i>
-        <label for="email" class="block text-sm font-medium text-white mb-1">Email</label>
-        <input type="email" id="email" placeholder="Masukkan email Anda" required
-               class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Masukkan email Anda" required>
       </div>
 
       <div class="input-group">
-        <i class="fas fa-lock"></i>
-        <label for="password" class="block text-sm font-medium text-white mb-1">Password</label>
-        <input type="password" id="password" placeholder="Masukkan password Anda" required
-               class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Masukkan password Anda" required>
       </div>
 
-      <button type="submit" class="btn-login w-full py-3 rounded-lg font-semibold">
-        <i class="fas fa-arrow-right mr-2"></i> Login
+      <button type="submit" class="btn-login">
+        <i class="fas fa-sign-in-alt"></i> Login
       </button>
     </form>
 
@@ -145,10 +226,11 @@
     </div>
   </div>
 
-  <footer class="text-center mt-8">
-    <p>&copy; 2025 Nurse Alert.</p>
+  <footer class="site-footer">
+    <p>&copy; 2024 CareAssist Notify. All Rights Reserved.</p>
   </footer>
 
+  <!-- SCRIPT LOGIKA TIDAK DIUBAH SAMA SEKALI -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
@@ -178,8 +260,8 @@
       loadingDiv.style.display = show ? 'block' : 'none';
       submitBtn.disabled = show;
       submitBtn.innerHTML = show
-        ? '<i class="fas fa-spinner fa-spin mr-2"></i> Logging in...'
-        : '<i class="fas fa-arrow-right mr-2"></i> Login';
+        ? '<i class="fas fa-spinner fa-spin"></i> Logging in...'
+        : '<i class="fas fa-sign-in-alt"></i> Login';
     }
 
     loginForm.addEventListener('submit', async (e) => {
@@ -188,7 +270,6 @@
       const email = emailInput.value.trim();
       const password = passwordInput.value.trim();
 
-      // Validasi tambahan
       if (!email || !password) {
         errorDiv.textContent = 'Email dan password harus diisi!';
         return;
