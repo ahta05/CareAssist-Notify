@@ -46,16 +46,25 @@ function closeConfirmModal() {
 }
 
 // =======================
-// CARD BUILDER (HYBRID VERSION)
+// CARD BUILDER (VERSION WITH ICONS)
 // =======================
 function buildCard(room, key, alert) {
   const ts = new Date(alert.createdAt).toLocaleString();
   const card = document.createElement('div');
   
-  const colorClass = alert.type === 'infus' ? 'red' : alert.type === 'nonmedis' ? 'white' : alert.type === 'medis' ? 'yellow' : '';
+  const colorClass = alert.type === 'infus' ? 'yellow' : alert.type === 'nonmedis' ? 'white' : alert.type === 'medis' ? 'red' : '';
   card.className = `card ${colorClass} ${alert.status === 'Ditangani' ? 'handled' : 'active'}`;
 
+  // Tentukan ikon berdasarkan jenis
+  let iconClass = 'fas fa-question-circle'; // Default
+  if (alert.type === 'infus') iconClass = 'fas fa-droplet';
+  if (alert.type === 'medis') iconClass = 'fas fa-stethoscope';
+  if (alert.type === 'nonmedis') iconClass = 'fas fa-hands-helping';
+
   card.innerHTML = `
+    <div class="alert-icon">
+      <i class="${iconClass}"></i>
+    </div>
     <div class="card-details-simple">
       <div><b>Ruang:</b> ${room.replace('room_', '')}</div>
       <div><b>Jenis:</b> ${alert.type}</div>
