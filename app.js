@@ -23,13 +23,40 @@ const handledList = document.getElementById('handled-list');
 const historyTable = document.getElementById('history-table');
 
 // =======================
-// VARIABEL UNTUK MELACAK ALERT (DIUBAH DARI SET KE MAP)
+// VARIABEL UNTUK MELACAK ALERT
 // =======================
-// Gunakan Map untuk menyimpan kunci alert dan timestamp terakhir yang dilihat
 let activeAlerts = new Map();
 
 // =======================
-// FUNGSI UNTUK MODAL KONFIRMASI KUSTOM (PERBAIKAN TOMBOL)
+// FUNGSI UNTUK NOTIFIKASI NATIVE OS (TAMBAHAN)
+// =======================
+async function requestNotificationPermission() {
+  if ('Notification' in window) {
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      console.log('Izin notifikasi diberikan.');
+    } else {
+      console.warn('Izin notifikasi ditolak.');
+    }
+  } else {
+    console.warn('Browser ini tidak mendukung notifikasi.');
+  }
+}
+
+function showBrowserNotification(title, options) {
+  if (Notification.permission === 'granted') {
+    const notification = new Notification(title, options);
+    
+    // Fokus ke tab saat notifikasi diklik
+    notification.onclick = () => {
+      window.focus();
+      notification.close();
+    };
+  }
+}
+
+// =======================
+// FUNGSI UNTUK MODAL KONFIRMASI KUSTOM
 // =======================
 function showConfirmModal(message, onConfirm) {
   const modal = document.getElementById('confirm-modal');
@@ -68,7 +95,7 @@ function playNotificationSound() {
 }
 
 // =======================
-// CARD BUILDER (VERSION WITH ICONS)
+// CARD BUILDER
 // =======================
 function buildCard(room, key, alert) {
   const ts = new Date(alert.createdAt).toLocaleString();
@@ -124,15 +151,17 @@ function buildCard(room, key, alert) {
 }
 
 // =======================
-// MAIN LISTENER (VERSI LOGIKA SUARA YANG TEPAT)
+// MAIN LISTENER (VERSI LENGKAP DENGAN SUARA & NOTIFIKASI NATIVE)
 // =======================
 function listenAlerts() {
   onValue(ref(db, 'alerts_active'), snap => {
     const data = snap.val() || {};
     const currentAlerts = new Map();
-    let shouldPlaySound = false;
+    let shouldNotify = false;
 
-    // --- BANDINGKAN DATA LAMA DENGAN BARU ---
+    activeList.innerHTML = '';
+    handledList.innerHTML = '';
+
     Object.entries(data).forEach(([room, alerts]) => {
       Object.entries(alerts || {}).forEach(([key, alert]) => {
         const alertKey = `${room}/${key}`;
@@ -140,38 +169,11 @@ function listenAlerts() {
 
         const previousAlert = activeAlerts.get(alertKey);
 
-        // KONDISI 1: Alert ini BENAR-BENAR BARU (belum pernah ada)
-        if (!previousAlert) {
-          shouldPlaySound = true;
-          return; // Lanjut ke alert berikutnya
+        // Jika alert ini BARU atau DATANYA DIPERBARUI
+        if (!previousAlert || JSON.stringify(previousAlert) !== JSON.stringify(alert)) {
+          shouldNotify = true;
         }
 
-        // KONDISI 2: Alert ini sudah ada, tapi STATUSNYA MASIH AKTIF dan DATANYA DIPERBARUI
-        // (misalnya, timestamp berubah karena tombol ditekan lagi)
-        const wasActive = previousAlert.status !== 'Ditangani';
-        const isActive = alert.status !== 'Ditangani';
-
-        if (wasActive && isActive) {
-          // Bandingkan timestamp yang relevan untuk melihat adanya perubahan
-          const lastTimestamp = previousAlert.handledAt || previousAlert.createdAt;
-          const currentTimestamp = alert.handledAt || alert.createdAt;
-          if (lastTimestamp !== currentTimestamp) {
-            shouldPlaySound = true;
-          }
-        }
-      });
-    });
-
-    // --- MAINKAN SUARA JIKA PERLU ---
-    if (shouldPlaySound) {
-      playNotificationSound();
-    }
-
-    // --- UPDATE UI ---
-    activeList.innerHTML = '';
-    handledList.innerHTML = '';
-    Object.entries(data).forEach(([room, alerts]) => {
-      Object.entries(alerts || {}).forEach(([key, alert]) => {
         const card = buildCard(room, key, alert);
         alert.status === 'Ditangani'
           ? handledList.appendChild(card)
@@ -179,7 +181,23 @@ function listenAlerts() {
       });
     });
 
-    // --- SIMPAN DATA SAAT INI UNTUK PERBANDINGAN SELANJUTNYA ---
+    if (shouldNotify) {
+      playNotificationSound();
+      
+      // TAMBAHKAN NOTIFIKASI NATIVE OS
+      const firstNewAlert = currentAlerts.entries().next().value;
+      if (firstNewAlert) {
+        const [alertKey, alertData] = firstNewAlert;
+        const [room, key] = alertKey.split('/');
+        showBrowserNotification('CareAssist Notify - Alert Baru!', {
+          body: `Ada panggilan dari Ruang ${room.replace('room_', '')} (${alertData.type})`,
+          icon: 'icon.png',
+          tag: alertKey,
+          requireInteraction: true
+        });
+      }
+    }
+
     activeAlerts = currentAlerts;
   });
 }
@@ -357,6 +375,10 @@ document.getElementById('logout-btn').onclick = async () => {
 // =======================
 onAuthStateChanged(auth, user => {
   if (!user) return window.location.href = "index.html";
+  
+  // Minta izin notifikasi saat user berhasil login
+  requestNotificationPermission();
+  
   listenAlerts();
   renderHistory();
 });
