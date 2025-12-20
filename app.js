@@ -23,12 +23,13 @@ const handledList = document.getElementById('handled-list');
 const historyTable = document.getElementById('history-table');
 
 // =======================
-// VARIABEL UNTUK MELACAK ALERT
+// VARIABEL UNTUK MELACAK ALERT & FLAG
 // =======================
 let activeAlerts = new Map();
+let isFirstLoad = true; // Flag untuk mencegah notifikasi saat load pertama
 
 // =======================
-// FUNGSI UNTUK NOTIFIKASI NATIVE OS (TAMBAHAN)
+// FUNGSI UNTUK NOTIFIKASI NATIVE OS
 // =======================
 async function requestNotificationPermission() {
   if ('Notification' in window) {
@@ -46,8 +47,6 @@ async function requestNotificationPermission() {
 function showBrowserNotification(title, options) {
   if (Notification.permission === 'granted') {
     const notification = new Notification(title, options);
-    
-    // Fokus ke tab saat notifikasi diklik
     notification.onclick = () => {
       window.focus();
       notification.close();
@@ -64,16 +63,15 @@ function showConfirmModal(message, onConfirm) {
   modalBody.textContent = message;
   modal.style.display = 'flex';
   
-  // --- Handle Tombol "Hapus" ---
   const confirmBtn = document.getElementById('confirm-delete-btn');
   confirmBtn.replaceWith(confirmBtn.cloneNode(true)); 
   const newConfirmBtn = document.getElementById('confirm-delete-btn');
+  
   newConfirmBtn.addEventListener('click', () => {
     onConfirm();
     closeConfirmModal();
   });
 
-  // --- Handle Tombol "Batal" (PERBAIKAN) ---
   const cancelBtn = modal.querySelector('.btn-cancel');
   cancelBtn.replaceWith(cancelBtn.cloneNode(true));
   const newCancelBtn = modal.querySelector('.btn-cancel');
@@ -151,7 +149,7 @@ function buildCard(room, key, alert) {
 }
 
 // =======================
-// MAIN LISTENER (VERSI LENGKAP DENGAN SUARA & NOTIFIKASI NATIVE)
+// MAIN LISTENER (LOGIKA NOTIFIKASI YANG SUDAH DIPERBAIKI)
 // =======================
 function listenAlerts() {
   onValue(ref(db, 'alerts_active'), snap => {
@@ -169,9 +167,23 @@ function listenAlerts() {
 
         const previousAlert = activeAlerts.get(alertKey);
 
-        // Jika alert ini BARU atau DATANYA DIPERBARUI
-        if (!previousAlert || JSON.stringify(previousAlert) !== JSON.stringify(alert)) {
-          shouldNotify = true;
+        // --- LOGIKA NOTIFIKASI YANG DIPERBAIKI ---
+        // Jika ini bukan pertama kali load
+        if (!isFirstLoad) {
+          // KONDISI 1: Alert ini benar-benar baru
+          if (!previousAlert) {
+            shouldNotify = true;
+          }
+          // KONDISI 2: Alert sudah ada, statusnya MASIH AKTIF, dan DATANYA berubah
+          else {
+            const wasActive = previousAlert.status !== 'Ditangani';
+            const isActive = alert.status !== 'Ditangani';
+            if (wasActive && isActive) {
+              if (JSON.stringify(previousAlert) !== JSON.stringify(alert)) {
+                shouldNotify = true;
+              }
+            }
+          }
         }
 
         const card = buildCard(room, key, alert);
@@ -183,8 +195,6 @@ function listenAlerts() {
 
     if (shouldNotify) {
       playNotificationSound();
-      
-      // TAMBAHKAN NOTIFIKASI NATIVE OS
       const firstNewAlert = currentAlerts.entries().next().value;
       if (firstNewAlert) {
         const [alertKey, alertData] = firstNewAlert;
@@ -198,7 +208,9 @@ function listenAlerts() {
       }
     }
 
+    // Update state untuk pengecekan selanjutnya
     activeAlerts = currentAlerts;
+    isFirstLoad = false; // Set flag ke false setelah load pertama
   });
 }
 
