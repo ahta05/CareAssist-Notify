@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nurse Alert Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.png" type="image/png">
+</head>
+<body>
+  <header>
+    <h1>Nurse Alert</h1>
+    <nav>
+      <button id="tab-dashboard">Dashboard</button>
+      <button id="tab-history">History</button>
+      <button id="clear-handled-btn">Bersihkan Status Card</button>
+      <button id="logout-btn" style="margin-left: auto; background: red; color: white;">Logout</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section id="dashboard">
+      <h2>Alerts Belum Ditangani</h2>
+      <div id="active-list"></div>
+
+      <h2>Alerts Sudah Ditangani</h2>
+      <div id="handled-list"></div>
+    </section>
+
+    <!-- HISTORY -->
+    <section id="history" style="display:none;">
+      <h2>Riwayat Alert</h2>
+
+      <!-- Filter & Hapus History -->
+      <div class="history-actions">
+        <label for="filter-date">Filter tanggal:</label>
+        <input type="date" id="filter-date">
+        <button id="filter-btn">Tampilkan</button>
+
+        <label for="delete-date" style="margin-left:20px;">Hapus history tanggal:</label>
+        <input type="date" id="delete-date">
+        <button id="delete-history-btn">Hapus</button>
+      </div>
+
+      <!-- Tabel History -->
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Nomor Ruang</th>
+            <th>Jenis Alert</th>
+            <th>Status</th>
+            <th>Waktu</th>
+          </tr>
+        </thead>
+        <tbody id="history-table"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

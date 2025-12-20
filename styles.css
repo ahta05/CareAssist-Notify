@@ -1,0 +1,331 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  background: #0d0d0d;
+  color: #ffffff;
+  margin: 0;
+  padding: 20px;
+  line-height: 1.5;
+}
+
+h1 {
+  font-size: 3rem;
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 32px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+nav button {
+  margin: 0 12px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background: #00ffff;
+  color: #0d0d0d;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 255, 255, 0.2);
+}
+nav button:hover {
+  background: #009999;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 255, 255, 0.3);
+}
+
+.card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  margin: 16px 0;
+  background: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.3s ease;
+}
+.card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+.card.active { /* Glow permanen untuk alert aktif */
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+}
+.card.handled { /* Redup untuk alert ditangani */
+  opacity: 0.6;
+  box-shadow: none;
+}
+/* Tambahan: Warna card berdasarkan type alert (merah/putih/kuning) */
+.card.red {
+  border-left: 6px solid #e74c3c; /* Merah untuk darurat */
+  background: rgba(231, 76, 60, 0.1); /* Subtle red background */
+}
+.card.white {
+  border-left: 6px solid #ecf0f1; /* Putih untuk sedang */
+  background: rgba(236, 240, 241, 0.1); /* Subtle white background */
+}
+.card.yellow {
+  border-left: 6px solid #f1c40f; /* Kuning untuk rendah */
+  background: rgba(241, 196, 15, 0.1); /* Subtle yellow background */
+}
+.card.kondisi.infus { border-left: 6px solid #f1c40f; }
+.card.pertolongan.medis { border-left: 6px solid #e74c3c; }
+.card.pertolongan.non-medis { border-left: 6px solid #2ecc71; }
+
+.details {
+  flex: 1;
+}
+.details .row {
+  display: flex;
+  align-items: center;
+  margin: 6px 0;
+}
+.details .label {
+  font-weight: bold;
+  min-width: 120px;
+  color: #cccccc;
+}
+.details .colon {
+  margin: 0 8px;
+  color: #888888;
+}
+.details .value {
+  flex: 1;
+}
+
+.footer {
+  margin-left: 20px;
+}
+
+.card button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #00ffff;
+  color: #0d0d0d;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 255, 255, 0.2);
+}
+.card button:hover {
+  background: #009999;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 255, 255, 0.3);
+}
+.card button:disabled {
+  background: #555;
+  color: #aaa;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Gaya untuk page history di desktop */
+.history-actions {
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap; /* Biar wrap jika perlu di desktop */
+}
+
+.history-actions label {
+  font-weight: bold;
+  color: #cccccc;
+}
+
+.history-actions input[type="date"] {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  background: #1a1a1a;
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.history-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #00ffff;
+  color: #0d0d0d;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 255, 255, 0.2);
+}
+.history-actions button:hover {
+  background: #009999;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 255, 255, 0.3);
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.history-table th,
+.history-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+.history-table th {
+  background: #222;
+  color: #00ffff;
+  font-weight: bold;
+}
+
+.history-table tr:nth-child(even) {
+  background: #141414;
+}
+
+.history-table tr:hover {
+  background: #222;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 16px;
+  }
+  h1 {
+    font-size: 2.5rem;
+    letter-spacing: 1px;
+  }
+  .card {
+    font-size: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+  }
+
+  /* --- Formasi row tetap horizontal di mobile --- */
+  .details .row {
+    display: flex;
+    flex-direction: row;   /* selalu horizontal */
+    align-items: flex-start; /* biar value panjang tetap sejajar atas */
+    margin: 6px 0;
+  }
+  .details .label {
+    font-weight: bold;
+    min-width: 120px; /* konsistensi lebar label */
+    color: #cccccc;
+    margin-bottom: 0; /* jangan turun */
+  }
+  .details .colon {
+    margin: 0 8px;
+    color: #888888;
+    display: inline; /* colon tetap muncul */
+  }
+  .details .value {
+    flex: 1;
+    word-wrap: break-word;   /* biar teks panjang otomatis turun */
+    overflow-wrap: break-word;
+  }
+
+  .footer {
+    margin-left: 0;
+    margin-top: 16px;
+  }
+  .card.active {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+  }
+  nav button {
+    margin: 0 6px;
+    padding: 10px 20px;
+  }
+  
+  /* Gaya untuk page history di mobile - diperbaiki untuk rapi */
+  .history-actions {
+    margin: 16px 0;
+    display: flex;
+    flex-direction: column; /* Ubah ke kolom untuk mobile agar lebih rapi */
+    align-items: flex-start; /* Ubah ke flex-start agar elemen tidak stretch penuh, lebih proporsional */
+    gap: 12px;
+  }
+  
+  .history-actions label {
+    font-weight: bold;
+    color: #cccccc;
+    margin: 0; /* Reset semua margin untuk rata kiri penuh */
+    text-align: left; /* Pastikan rata kiri */
+    margin-left: 0 !important; /* Override inline style margin-left:20px dari HTML */
+  }
+  
+  .history-actions input[type="date"] {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: none;
+    background: #1a1a1a;
+    color: #ffffff;
+    font-size: 1rem;
+    width: 90%; /* Kurangi dari 100% ke 90% untuk proporsi lebih ideal, tidak terlalu penuh horizontal */
+    max-width: 300px; /* Tambah max-width untuk batas maksimal, agar tidak terlalu lebar di layar besar */
+  }
+  
+  .history-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #00ffff;
+    color: #0d0d0d;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 255, 255, 0.2);
+    width: 90%; /* Kurangi dari 100% ke 90% untuk proporsi lebih ideal */
+    max-width: 300px; /* Tambah max-width untuk konsistensi */
+  }
+  .history-actions button:hover {
+    background: #009999;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 255, 255, 0.3);
+  }
+  
+  .history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    background: #1a1a1a;
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 0.9rem; /* Sedikit kecilkan font untuk mobile */
+  }
+  
+  .history-table th,
+  .history-table td {
+    padding: 10px 12px; /* Kurangi padding untuk mobile */
+    text-align: left;
+    border-bottom: 1px solid #333;
+  }
+  
+  .history-table th {
+    background: #222;
+    color: #00ffff;
+    font-weight: bold;
+  }
+  
+  .history-table tr:nth-child(even) {
+    background: #141414;
+  }
+  
+  .history-table tr:hover {
+    background: #222;
+  }
+}
