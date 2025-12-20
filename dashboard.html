@@ -86,6 +86,29 @@
     <p>&copy; 2024 CareAssist Notify. All Rights Reserved.</p>
   </footer>
 
+  <!-- ========================================== -->
+  <!-- MODAL KONFIRMASI CUSTOM (TAMBAHAN) -->
+  <!-- ========================================== -->
+  <div id="confirm-modal" class="modal">
+    <div class="modal-overlay" onclick="closeConfirmModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-exclamation-triangle"></i> Konfirmasi Hapus</h3>
+      </div>
+      <div class="modal-body">
+        <p>Apakah Anda yakin ingin menghapus riwayat untuk tanggal ini? Tindakan ini tidak dapat dibatalkan.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeConfirmModal()">
+          <i class="fas fa-times"></i> Batal
+        </button>
+        <button class="btn-confirm-delete" id="confirm-delete-btn">
+          <i class="fas fa-trash"></i> Ya, Hapus
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="app.js"></script>
 </body>
 </html>
