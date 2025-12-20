@@ -324,20 +324,8 @@ nav button:hover {
 }
 
 /* ==========================================
-   GAYA UNTUK MODAL KONFIRMASI CUSTOM (TAMBAHAN)
+   GAYA UNTUK MODAL KONFIRMASI CUSTOM (PERBAIKAN)
    ========================================== */
-
-/* Overlay latar belakang yang gelap */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px);
-  z-index: 1000;
-}
 
 /* Kontainer utama modal */
 .modal {
@@ -347,13 +335,27 @@ nav button:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1001;
+  z-index: 1000; /* Z-index tertinggi untuk menutupi semua */
   justify-content: center;
   align-items: center;
 }
 
+/* Overlay latar belakang yang gelap */
+.modal-overlay {
+  position: absolute; /* Gunakan absolute di dalam modal */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
 /* Isi dari modal */
 .modal-content {
+  position: relative; /* PENTING: agar berada di atas overlay */
+  z-index: 1; /* PENTING: naikkan satu lapisan dari overlay */
   background: var(--card-bg);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-hover);
