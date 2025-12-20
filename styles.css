@@ -433,3 +433,23 @@ nav button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
 }
+/* ==========================================
+   GAYA SEDERHANA UNTUK DETAIL KARTU (PERBAIKAN BUG)
+   ========================================== */
+
+.card-details-simple {
+  flex: 1;
+  color: var(--text-color); /* Pastikan warna teks benar */
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.card-details-simple div {
+  margin-bottom: 8px; /* Beri jarak antar baris */
+}
+
+.card-details-simple b {
+  color: var(--text-muted); /* Warna untuk label (Ruang, Jenis, dll) */
+  min-width: 80px; /* Lebarkan label agar rapi */
+  display: inline-block;
+}
