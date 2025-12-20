@@ -4,13 +4,13 @@ import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/fi
 
 // Firebase config (standarisasi: gunakan yang sama di semua file)
 const firebaseConfig = {
-  apiKey: "AIzaSyBqTDry_kn-PJVwfc8Fi9BG457hhI2ObPA",
-  authDomain: "nurse-alert-001.firebaseapp.com",
-  databaseURL: "https://nurse-alert-001-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "nurse-alert-001",
-  storageBucket: "nurse-alert-001.appspot.com",  // Diperbaiki: hapus ".app" ekstra agar konsisten
-  messagingSenderId: "54615268012",
-  appId: "1:54615268012:web:775c06120d794eedd69d09"
+  apiKey: "AIzaSyBiRnmrJwnYGdKtX5DR4mcsgsf_wkTo_V4",
+  authDomain: "careassist-notify.firebaseapp.com",
+  databaseURL: "https://careassist-notify-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "careassist-notify",
+  storageBucket: "careassist-notify.firebasestorage.app",
+  messagingSenderId: "279878356808",
+  appId: "1:279878356808:web:08e40763159a4aad152d7d"
 };
 
 const app = initializeApp(firebaseConfig);
