@@ -3,7 +3,10 @@
    Tema: Elegan Blue Spectrum + Prioritas Warna Standar
    ========================================== */
 
-/* 1. DEFINISI VARIABEL TEMA (PALET BIRU UNTUK UI UMUM) */
+/* 1. IMPOR FONT SERIF YANG ELEGAN DARI GOOGLE FONTS */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+
+/* 2. DEFINISI VARIABEL TEMA (PALET BIRU UNTUK UI UMUM) */
 :root {
   /* Gradien Background dari Biru Langit ke Abu-abu Silver */
   --bg-color-start: #e0eafc;
@@ -26,7 +29,7 @@
   --shadow-hover: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
 }
 
-/* 2. BACKGROUND ANIMASI & TIPOGRAFI */
+/* 3. BACKGROUND ANIMASI & TIPOGRAFI */
 body {
   font-family: var(--font-family);
   /* Background Gradien Biru Animasi */
@@ -37,6 +40,9 @@ body {
   margin: 0;
   padding: 20px;
   line-height: 1.6;
+  /* Layout untuk Sticky Footer */
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
 }
 
@@ -57,6 +63,37 @@ h1 {
   margin-bottom: 40px;
   font-weight: 800;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  /* Gunakan Font Serif untuk Judul Utama */
+  font-family: 'Playfair Display', var(--font-family);
+}
+
+/* 4. GAYA UNTUK ELEMEN BARU DI HTML */
+.container {
+  flex: 1; /* Ini akan mendorong footer ke bawah */
+}
+
+.tagline {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-top: -15px; /* Jarak rapat dengan judul */
+  margin-bottom: 30px;
+  font-weight: 400;
+}
+
+.brand-icon {
+  height: 1.2em; /* Ukuran icon mengikuti ukuran font h1 */
+  vertical-align: middle; /* Sejajarkan icon dengan teks */
+  margin-right: 12px;
+}
+
+.site-footer {
+  text-align: center;
+  font-style: italic; /* Membuat font italic */
+  color: var(--text-muted);
+  padding: 20px 0;
+  margin-top: auto; /* Pastikan footer menempel di bawah */
+  font-size: 0.9rem;
 }
 
 nav {
@@ -97,7 +134,7 @@ nav button:hover {
   box-shadow: var(--shadow-hover);
 }
 
-/* 3. KARTU DENGAN EFEK GLASSMORPHISM */
+/* 5. KARTU DENGAN EFEK GLASSMORPHISM */
 .card {
   display: flex;
   justify-content: space-between;
@@ -148,7 +185,7 @@ nav button:hover {
   transform: scale(0.98);
 }
 
-/* 4. WARNA PRIORITAS (DIKEMBALIKAN KE ASLI) */
+/* 6. WARNA PRIORITAS (DIKEMBALIKAN KE ASLI) */
 .card.red {
   border-left: 6px solid #e74c3c; /* Merah Darurat */
   background: rgba(231, 76, 60, 0.1);
@@ -176,7 +213,7 @@ nav button:hover {
   background: rgba(46, 204, 113, 0.1);
 }
 
-/* 5. DETAIL & TEKS */
+/* 7. DETAIL & TEKS */
 .details { flex: 1; }
 .details .row { display: flex; align-items: center; margin: 8px 0; }
 .details .label {
@@ -218,7 +255,7 @@ nav button:hover {
   transform: none;
 }
 
-/* 6. HALAMAN RIWAYAT */
+/* 8. HALAMAN RIWAYAT */
 .history-actions { margin: 20px 0; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
 .history-actions label { font-weight: 600; color: var(--text-color); }
 .history-actions input[type="date"] {
@@ -269,7 +306,7 @@ nav button:hover {
 .history-table tr:nth-child(even) { background: rgba(248, 249, 250, 0.5); }
 .history-table tr:hover { background: rgba(233, 236, 239, 0.7); }
 
-/* 7. RESPONSIVE UNTUK MOBILE */
+/* 9. RESPONSIVE UNTUK MOBILE */
 @media (max-width: 600px) {
   body { padding: 15px; }
   h1 { font-size: 2.5rem; }
