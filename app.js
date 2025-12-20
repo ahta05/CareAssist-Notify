@@ -47,78 +47,34 @@ function closeConfirmModal() {
 }
 
 // =======================
-// CARD BUILDER (VERSI YANG SUDAH DIPERBAIKI)
+// CARD BUILDER (DEBUG VERSION)
 // =======================
 function buildCard(room, key, alert) {
-  const ts = new Date(alert.createdAt).toLocaleString();
+  console.log("buildCard called for:", room, alert); // Tambahkan log ini
+
   const card = document.createElement('div');
   
-  // Tambah class warna berdasarkan type
-  const colorClass = alert.type === 'infus' ? 'red' : alert.type === 'nonmedis' ? 'white' : alert.type === 'medis' ? 'yellow' : '';
-  card.className = `card ${colorClass} ${alert.status === 'Ditangani' ? 'handled' : 'active'}`;
+  // Gunakan class yang sederhana dan gaya inline untuk debugging
+  card.className = 'card'; // Kita tetap pakai class card untuk layout dasar
+  card.style.border = '3px solid red'; // Garis batas yang sangat jelas
+  card.style.padding = '20px';
+  card.style.margin = '20px 0';
+  card.style.backgroundColor = 'lightyellow'; // Latar belakang yang sangat jelas
+  card.style.color = 'black'; // Teks hitam pasti terlihat
 
-  // PERBAIKAN: Buat struktur HTML yang sesuai dengan CSS
+  // Konten super sederhana
   card.innerHTML = `
-    <div class="details">
-      <div class="row">
-        <span class="label">Ruang</span>
-        <span class="colon">:</span>
-        <span class="value">${room.replace('room_', '')}</span>
-      </div>
-      <div class="row">
-        <span class="label">Jenis</span>
-        <span class="colon">:</span>
-        <span class="value">${alert.type}</span>
-      </div>
-      <div class="row">
-        <span class="label">Status</span>
-        <span class="colon">:</span>
-        <span class="value">${alert.status || 'Aktif'}</span>
-      </div>
-      <div class="row">
-        <span class="label">Waktu</span>
-        <span class="colon">:</span>
-        <span class="value">${ts}</span>
-      </div>
-      <div class="row">
-        <span class="label">Pesan</span>
-        <span class="colon">:</span>
-        <span class="value">${alert.message || '-'}</span>
-      </div>
-    </div>
-    <div class="footer">
-      <button class="ack-btn" ${alert.status === 'Ditangani' ? 'disabled' : ''}>
-        ${alert.status === 'Ditangani' ? 'Ditangani' : 'Tangani'}
-      </button>
-    </div>
+    <h3>INI KARTU DEBUG</h3>
+    <p><b>Ruang:</b> ${room.replace('room_', '')}</p>
+    <p><b>Jenis:</b> ${alert.type}</p>
+    <p><b>Status:</b> ${alert.status || 'Aktif'}</p>
+    <p><b>Waktu:</b> ${new Date(alert.createdAt).toLocaleString()}</p>
+    <button>Klik Saya</button>
   `;
 
-  if (alert.status !== 'Ditangani') {
-    card.querySelector('.ack-btn').onclick = async () => {
-      try {
-        const now = Date.now();
-
-        // Update ACTIVE → Ditangani
-        await update(ref(db, `alerts_active/${room}/${key}`), {
-          status: "Ditangani",
-          handledAt: now
-        });
-
-        // Log ke HISTORY (immutable)
-        await push(ref(db, `alerts_history/${room}`), {
-          ...alert,
-          status: "Ditangani",
-          handledAt: now
-        });
-
-        // JANGAN hapus dari ACTIVE (agar card pindah ke handled list, bukan hilang)
-        // await remove(ref(db, `alerts_active/${room}/${key}`));  // Dihapus agar tetap di active
-      } catch (error) {
-        console.error("Error handling alert:", error);
-        alert("Gagal menangani alert. Coba lagi.");
-      }
-    };
-  }
+  // Untuk sementara, kita nonaktifkan logika tombol "Tangani"
+  // untuk fokus pada masalah tampilan.
+  // if (alert.status !== 'Ditangani') { ... }
 
   return card;
 }
