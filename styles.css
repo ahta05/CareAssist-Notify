@@ -1,331 +1,276 @@
 /* ==========================================
-   CARE ASSIST NOTIFY - GAYA BARU
-   Tema: Modern, Elegan, & Profesional
+   CARE ASSIST NOTIFY - GAYA "VISUAL WAH"
+   Tema: Modern, Glassmorphism, & Animasi Dinamis
    ========================================== */
 
-/* 1. DEFINISI VARIABEL TEMA (Mudah diubah kembali) */
+/* 1. DEFINISI VARIABEL TEMA (Ditambah Gradien) */
 :root {
-  --bg-color: #F8F9FA;
-  --card-bg: #FFFFFF;
+  --bg-color-start: #e0eafc;
+  --bg-color-end: #cfdef3;
+  --card-bg: rgba(255, 255, 255, 0.7); /* Glassmorphism */
   --text-color: #212529;
   --text-muted: #6c757d;
-  --border-color: #dee2e6;
+  --border-color: rgba(255, 255, 255, 0.18);
 
-  --primary-color: #0A4D68; /* Navy Blue - Profesional & Tenang */
-  --secondary-color: #05BFDB; /* Teal - Modern & Segar */
-  --accent-color: #339af0; /* Light Blue - Aksen interaktif */
+  --primary-color: #0A4D68;
+  --secondary-color: #05BFDB;
+  --accent-color: #339af0;
 
-  --priority-high-bg: #FDF2F2;
-  --priority-high-border: #E63946; /* Merah Darurat */
+  --priority-high-bg: rgba(230, 57, 70, 0.15);
+  --priority-high-border: #E63946;
   --priority-high-text: #D62828;
 
-  --priority-medium-bg: #FFF4E6;
-  --priority-medium-border: #FF8A00; /* Oranye Medis */
+  --priority-medium-bg: rgba(255, 138, 0, 0.15);
+  --priority-medium-border: #FF8A00;
   --priority-medium-text: #E85D04;
 
-  --priority-low-bg: #F0FDF4;
-  --priority-low-border: #16A34A; /* Hijau Non-Medis */
+  --priority-low-bg: rgba(22, 163, 74, 0.15);
+  --priority-low-border: #16A34A;
   --priority-low-text: #15803D;
 
-  --font-family: 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  --border-radius: 12px;
-  --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.12);
+  --font-family: 'Poppins', 'Roboto', 'Segoe UI', sans-serif; /* Font yang lebih stylish */
+  --border-radius: 16px;
+  --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  --shadow-hover: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
 }
 
-/* 2. GAYA DASAR & TIPOGRAFI */
+/* 2. BACKGROUND ANIMASI & TIPOGRAFI */
 body {
   font-family: var(--font-family);
-  background: var(--bg-color);
+  /* Background Gradien Animasi */
+  background: linear-gradient(-45deg, var(--bg-color-start), var(--bg-color-end), #fbc2eb, #a6c1ee);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
   color: var(--text-color);
   margin: 0;
   padding: 20px;
   line-height: 1.6;
+  min-height: 100vh;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 h1 {
-  font-size: 3rem;
+  font-size: 3.5rem; /* Lebih besar */
   text-align: center;
-  color: var(--primary-color); /* Warna utama brand */
-  margin-bottom: 32px;
-  font-weight: 700;
-  /* Dihilangkan untuk kesan lebih elegan: text-transform, letter-spacing */
+  /* Teks Gradien */
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 40px;
+  font-weight: 800;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
 }
 
 nav {
   display: flex;
   justify-content: center;
-  margin-bottom: 24px;
+  margin-bottom: 30px;
 }
 nav button {
   margin: 0 12px;
-  padding: 12px 24px;
+  padding: 14px 28px;
   border: none;
-  border-radius: var(--border-radius);
-  background: var(--primary-color); /* Tombol utama dengan warna brand */
+  border-radius: 50px; /* Sangat rounded */
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   color: #FFFFFF;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Transisi elastis */
   box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+nav button::before { /* Efek kilau saat hover */
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+nav button:hover::before {
+  left: 100%;
 }
 nav button:hover {
-  background: var(--secondary-color);
-  color: #FFFFFF;
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.05);
   box-shadow: var(--shadow-hover);
 }
 
-/* 3. KARTU NOTIFIKASI UTAMA */
+/* 3. KARTU DENGAN EFEK GLASSMORPHISM */
 .card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px; /* Diperbesar untuk kesan lebih lapang */
-  margin: 16px 0;
+  padding: 28px;
+  margin: 20px 0;
   background: var(--card-bg);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
-  transition: all 0.3s ease;
-  border-left: 6px solid transparent; /* Default, akan di-override */
+  transition: all 0.4s ease;
+  border-left: 6px solid transparent;
+  /* Efek Kaca */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  /* Animasi masuk */
+  animation: slideInFade 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0;
+  transform: translateY(30px);
 }
+
+@keyframes slideInFade {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .card:hover {
   box-shadow: var(--shadow-hover);
-  transform: translateY(-3px); /* Efek hover lebih dramatis */
+  transform: translateY(-5px) scale(1.02);
 }
 .card.active { 
-  /* Glow halus yang elegan, bukan neon */
-  box-shadow: 0 0 20px rgba(10, 77, 104, 0.4);
+  /* Efek Pulse untuk yang aktif */
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(10, 77, 104, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(10, 77, 104, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(10, 77, 104, 0);
+  }
 }
 .card.handled { 
-  opacity: 0.5;
-  background: #e9ecef;
+  opacity: 0.4;
+  filter: grayscale(0.8);
+  transform: scale(0.98);
 }
 
-/* 4. WARNA PRIORITAS (Menyesuaikan class yang ada) */
-.card.red {
-  border-left-color: var(--priority-high-border);
-  background: var(--priority-high-bg);
-}
-.card.white {
-  border-left-color: var(--priority-low-border); /* Asumsikan 'white' adalah prioritas rendah */
-  background: var(--priority-low-bg);
-}
-.card.yellow {
-  border-left-color: var(--priority-medium-border);
-  background: var(--priority-medium-bg);
-}
+/* 4. WARNA PRIORITAS (Tetap Sama) */
+.card.red { border-left-color: var(--priority-high-border); background: var(--priority-high-bg); }
+.card.white { border-left-color: var(--priority-low-border); background: var(--priority-low-bg); }
+.card.yellow { border-left-color: var(--priority-medium-border); background: var(--priority-medium-bg); }
+.card.kondisi.infus { border-left-color: var(--priority-high-border); background: var(--priority-high-bg); }
+.card.pertolongan.medis { border-left-color: var(--priority-medium-border); background: var(--priority-medium-bg); }
+.card.pertolongan.non-medis { border-left-color: var(--priority-low-border); background: var(--priority-low-bg); }
 
-/* Menyesuaikan class prioritas yang lebih spesifik */
-.card.kondisi.infus { 
-  border-left-color: var(--priority-high-border); 
-  background: var(--priority-high-bg);
-}
-.card.pertolongan.medis { 
-  border-left-color: var(--priority-medium-border); 
-  background: var(--priority-medium-bg);
-}
-.card.pertolongan.non-medis { 
-  border-left-color: var(--priority-low-border); 
-  background: var(--priority-low-bg);
-}
-
-/* 5. DETAIL & TEKS DI DALAM KARTU */
-.details {
-  flex: 1;
-}
-.details .row {
-  display: flex;
-  align-items: center;
-  margin: 6px 0;
-}
+/* 5. DETAIL & TEKS */
+.details { flex: 1; }
+.details .row { display: flex; align-items: center; margin: 8px 0; }
 .details .label {
-  font-weight: bold;
+  font-weight: 600;
   min-width: 120px;
-  color: var(--text-muted); /* Warna label yang lebih lembut */
-}
-.details .colon {
-  margin: 0 8px;
   color: var(--text-muted);
 }
+.details .colon { margin: 0 8px; color: var(--text-muted); }
 .details .value {
   flex: 1;
   color: var(--text-color);
   font-weight: 500;
+  font-size: 1.1rem;
 }
 
-.footer {
-  margin-left: 20px;
-}
+.footer { margin-left: 20px; }
 
 .card button {
-  padding: 12px 20px; /* Padding sedikit lebih besar */
+  padding: 14px 24px;
   border: none;
-  border-radius: 8px;
+  border-radius: 50px;
   cursor: pointer;
-  background: var(--primary-color);
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   color: #FFFFFF;
   font-weight: bold;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 15px rgba(10, 77, 104, 0.4);
 }
 .card button:hover {
-  background: var(--accent-color);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(10, 77, 104, 0.6);
 }
 .card button:disabled {
   background: #adb5bd;
   color: #f8f9fa;
   cursor: not-allowed;
   box-shadow: none;
+  transform: none;
 }
 
-/* 6. HALAMAN RIWAYAT (HISTORY) */
-.history-actions {
-  margin: 16px 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.history-actions label {
-  font-weight: bold;
-  color: var(--text-color);
-}
-
+/* 6. HALAMAN RIWAYAT (Juga Ditingkatkan) */
+.history-actions { margin: 20px 0; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+.history-actions label { font-weight: 600; color: var(--text-color); }
 .history-actions input[type="date"] {
-  padding: 10px 12px;
-  border-radius: 6px;
+  padding: 12px 15px;
+  border-radius: 10px;
   border: 1px solid var(--border-color);
   background: var(--card-bg);
+  backdrop-filter: blur(5px);
   color: var(--text-color);
   font-size: 1rem;
 }
-
 .history-actions button {
-  padding: 10px 20px;
+  padding: 12px 24px;
   border: none;
-  border-radius: 6px;
+  border-radius: 50px;
   cursor: pointer;
-  background: var(--primary-color);
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   color: #FFFFFF;
   font-weight: bold;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
   box-shadow: var(--shadow);
 }
 .history-actions button:hover {
-  background: var(--secondary-color);
-  color: #FFFFFF;
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.05);
   box-shadow: var(--shadow-hover);
 }
 
 .history-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 16px;
+  margin-top: 20px;
   background: var(--card-bg);
   border-radius: var(--border-radius);
   overflow: hidden;
   box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
 }
-
-.history-table th,
-.history-table td {
-  padding: 14px 16px; /* Padding lebih lega */
-  text-align: left;
-  border-bottom: 1px solid var(--border-color);
-}
-
+.history-table th, .history-table td { padding: 16px 18px; text-align: left; border-bottom: 1px solid var(--border-color); }
 .history-table th {
-  background: var(--primary-color);
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   color: #FFFFFF;
   font-weight: 600;
   text-transform: uppercase;
   font-size: 0.85rem;
   letter-spacing: 0.5px;
 }
-
-.history-table tr:nth-child(even) {
-  background: #f8f9fa;
-}
-
-.history-table tr:hover {
-  background: #e9ecef;
-}
+.history-table tr:nth-child(even) { background: rgba(248, 249, 250, 0.5); }
+.history-table tr:hover { background: rgba(233, 236, 239, 0.7); }
 
 /* 7. RESPONSIVE UNTUK MOBILE */
 @media (max-width: 600px) {
-  body {
-    padding: 16px;
-  }
-  h1 {
-    font-size: 2.2rem;
-  }
-  .card {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 18px;
-  }
-
-  .details .row {
-    flex-direction: row;
-    align-items: flex-start;
-    margin: 6px 0;
-  }
-  .details .label {
-    min-width: 110px;
-    color: var(--text-muted);
-  }
-  .details .colon {
-    margin: 0 8px;
-    color: var(--text-muted);
-  }
-  .details .value {
-    flex: 1;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-  }
-
-  .footer {
-    margin-left: 0;
-    margin-top: 16px;
-    width: 100%;
-  }
-  .footer button {
-    width: 100%;
-  }
-  
-  .card.active {
-    box-shadow: 0 0 15px rgba(10, 77, 104, 0.3);
-  }
-  nav button {
-    margin: 5px;
-    padding: 10px 18px;
-    font-size: 0.9rem;
-  }
-  
-  .history-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .history-actions label,
-  .history-actions input[type="date"],
-  .history-actions button {
-    width: 100%;
-    max-width: none;
-    margin-left: 0 !important;
-  }
-  
-  .history-table {
-    font-size: 0.9rem;
-  }
-  
-  .history-table th,
-  .history-table td {
-    padding: 12px 10px;
-  }
+  body { padding: 15px; }
+  h1 { font-size: 2.5rem; }
+  .card { flex-direction: column; align-items: flex-start; padding: 20px; }
+  .details .row { flex-direction: row; align-items: flex-start; margin: 6px 0; }
+  .details .label { min-width: 110px; }
+  .details .value { word-wrap: break-word; overflow-wrap: break-word; }
+  .footer { margin-left: 0; margin-top: 16px; width: 100%; }
+  .footer button { width: 100%; }
+  nav button { margin: 5px; padding: 12px 20px; font-size: 0.9rem; }
+  .history-actions { flex-direction: column; align-items: stretch; }
+  .history-actions label, .history-actions input[type="date"], .history-actions button { width: 100%; max-width: none; margin-left: 0 !important; }
+  .history-table { font-size: 0.9rem; }
+  .history-table th, .history-table td { padding: 12px 10px; }
 }
