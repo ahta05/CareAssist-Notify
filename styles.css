@@ -127,7 +127,7 @@ nav button:hover {
   box-shadow: var(--shadow-hover);
 }
 
-/* 5. KARTU (FINAL - TANPA ANIMASI YANG BERMASALAH) */
+/* 5. KARTU DENGAN IKON & ANIMASI AMAN */
 .card {
   display: flex;
   justify-content: space-between;
@@ -137,14 +137,26 @@ nav button:hover {
   background: var(--card-bg);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
   border-left: 6px solid transparent;
-  /* ANIMASI & EFEK YANG DISEBABKAN MASALAH SUDAH DIHAPUS */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  
+  /* ANIMASI YANG LEBIH AMAN: Tidak menggunakan opacity: 0 */
+  animation: slideInScale 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  transform: scale(0.95);
+}
+
+@keyframes slideInScale {
+  to {
+    transform: scale(1);
+  }
 }
 
 .card:hover {
   box-shadow: var(--shadow-hover);
-  transform: translateY(-3px);
+  transform: translateY(-5px) scale(1.02);
 }
 
 .card.handled { 
@@ -152,31 +164,38 @@ nav button:hover {
   filter: grayscale(0.8);
 }
 
-/* 6. WARNA PRIORITAS */
+/* 6. WARNA PRIORITAS & IKON (KONTRAS LEBIH BAIK) */
 .card.red {
   border-left-color: #e74c3c;
-  background: rgba(231, 76, 60, 0.1);
-}
-.card.white {
-  border-left-color: #ecf0f1;
-  background: rgba(236, 240, 241, 0.1);
+  background: rgba(231, 76, 60, 0.2); /* Kontras lebih kuat */
 }
 .card.yellow {
   border-left-color: #f1c40f;
-  background: rgba(241, 196, 15, 0.1);
+  background: rgba(241, 196, 15, 0.2);
 }
-.card.kondisi.infus { 
-  border-left-color: #f1c40f;
-  background: rgba(241, 196, 15, 0.1);
-}
-.card.pertolongan.medis { 
-  border-left-color: #e74c3c;
-  background: rgba(231, 76, 60, 0.1);
-}
-.card.pertolongan.non-medis { 
+.card.white {
   border-left-color: #2ecc71;
-  background: rgba(46, 204, 113, 0.1);
+  background: rgba(46, 204, 113, 0.2);
 }
+
+/* Gaya untuk Ikon Besar */
+.alert-icon {
+  font-size: 3rem;
+  margin-right: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Warna Ikon Mengikuti Warna Kartu */
+.card.red .alert-icon { color: #c0392b; }
+.card.yellow .alert-icon { color: #d68910; }
+.card.white .alert-icon { color: #27ae60; }
 
 /* 7. GAYA UNTUK DETAIL KARTU */
 .card-details-simple {
@@ -267,19 +286,85 @@ nav button:hover {
 .history-table tr:nth-child(even) { background: rgba(248, 249, 250, 0.5); }
 .history-table tr:hover { background: rgba(233, 236, 239, 0.7); }
 
-/* 9. RESPONSIVE UNTUK MOBILE */
+/* 9. RESPONSIVE UNTUK MOBILE (VERSI OPTIMASI) */
 @media (max-width: 600px) {
-  body { padding: 15px; }
-  h1 { font-size: 2.5rem; }
-  .card { flex-direction: column; align-items: flex-start; padding: 20px; }
-  .card-details-simple { width: 100%; }
-  .footer { margin-left: 0; margin-top: 16px; width: 100%; }
-  .footer button { width: 100%; }
-  nav button { margin: 5px; padding: 12px 20px; font-size: 0.9rem; }
-  .history-actions { flex-direction: column; align-items: stretch; }
-  .history-actions label, .history-actions input[type="date"], .history-actions button { width: 100%; max-width: none; margin-left: 0 !important; }
-  .history-table { font-size: 0.9rem; }
-  .history-table th, .history-table td { padding: 12px 10px; }
+  body {
+    padding: 10px; /* Kurangi padding body */
+  }
+
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  /* --- OPTIMASI KARTU UNTUK MOBILE --- */
+  .card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px; /* Kurangi padding di dalam kartu */
+    margin: 15px 0; /* Kurangi margin luar */
+  }
+
+  /* --- IKON YANG LEBIH KECIL DAN KOMPAK --- */
+  .alert-icon {
+    font-size: 2rem; /* Dari 3rem menjadi 2rem */
+    margin-right: 0; /* Hapus margin kanan */
+    margin-bottom: 15px; /* Ganti dengan margin bawah */
+    width: 60px; /* Dari 80px menjadi 60px */
+    height: 60px;
+    align-self: center; /* Posisikan ikon di tengah */
+  }
+
+  /* --- DETAIL YANG LEBIH RAPI --- */
+  .card-details-simple {
+    width: 100%;
+    text-align: left; /* Rata kiri untuk keterbacaan */
+  }
+  .card-details-simple div {
+    margin-bottom: 6px; /* Kurangi jarak antar baris */
+    font-size: 0.9rem; /* Sedikit lebih kecil */
+  }
+  .card-details-simple b {
+    min-width: 70px; /* Lebarkan label agar rapi */
+    font-size: 0.85rem;
+  }
+
+  /* --- TOMBOL YANG MUDAH DI-TEKAN --- */
+  .card .footer {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 15px;
+  }
+  .card button {
+    width: 100%; /* Tombol penuh untuk kemudahan sentuh */
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
+
+  /* --- ELEMEN LAINNYA --- */
+  nav button {
+    margin: 5px;
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+  .history-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .history-actions label,
+  .history-actions input[type="date"],
+  .history-actions button {
+    width: 100%;
+    max-width: none;
+    margin-left: 0 !important;
+    margin-bottom: 10px;
+  }
+  .history-table {
+    font-size: 0.8rem; /* Font tabel lebih kecil */
+  }
+  .history-table th,
+  .history-table td {
+    padding: 10px 8px; /* Kurangi padding tabel */
+  }
 }
 
 /* ==========================================
