@@ -3,28 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- 1. BRANDING: Judul halaman di browser -->
   <title>CareAssist Notify - Dashboard</title>
-  
-  <!-- Link ke CSS yang sudah kita buat -->
   <link rel="stylesheet" href="styles.css" />
-  
-  <!-- Saran: Ganti favicon dengan logo CareAssist Notify -->
   <link rel="icon" href="favicon.png" type="image/png">
-  
-  <!-- Tambahkan Font Awesome untuk ikon -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
   <header>
     <div class="header-content">
-      <!-- 2. BRANDING: Judul utama dan tagline -->
-      <h1><i class="fas fa-heart-pulse"></i> CareAssist Notify</h1>
+      <!-- 1. GUNAKAN ICON KUSTOM -->
+      <h1><img src="icon.png" alt="CareAssist Notify Icon" class="brand-icon"> CareAssist Notify</h1>
+      
+      <!-- 2. TAGLINE DENGAN CLASS BARU -->
       <p class="tagline">Sistem Manajemen Panggilan Pasien Real-Time</p>
     </div>
     <nav>
-      <!-- Semua ID dipertahankan agar app.js tidak error -->
       <button id="tab-dashboard"><i class="fas fa-house-chimney-medical"></i> Dashboard</button>
       <button id="tab-history"><i class="fas fa-clock-rotate-left"></i> History</button>
       <button id="clear-handled-btn"><i class="fas fa-broom"></i> Bersihkan Status</button>
@@ -32,18 +26,16 @@
     </nav>
   </header>
 
-  <!-- Container untuk memusatkan konten -->
+  <!-- Container untuk memusatkan konten dan layout sticky footer -->
   <div class="container">
     <main>
       <!-- DASHBOARD -->
       <section id="dashboard">
-        <!-- 3. HIERARKI VISUAL: Heading yang lebih deskriptif dengan ikon -->
         <div class="section-header">
           <h2><i class="fas fa-bell"></i> Panggilan Aktif</h2>
           <p>Menampilkan semua permintaan yang belum ditangani.</p>
         </div>
         <div id="active-list">
-          <!-- 4. EMPTY STATE: Pesan saat tidak ada panggilan aktif -->
           <p class="empty-state"><i class="fas fa-check-circle"></i> Tidak ada panggilan aktif saat ini.</p>
         </div>
 
@@ -52,8 +44,7 @@
           <p>Menampilkan semua permintaan yang sudah ditangani.</p>
         </div>
         <div id="handled-list">
-           <!-- 4. EMPTY STATE: Pesan saat tidak ada panggilan selesai -->
-          <p class="empty-state"><i class="fas fa-clipboard-check"></i> Belum ada panggilan yang selesai.</p>
+           <p class="empty-state"><i class="fas fa-clipboard-check"></i> Belum ada panggilan yang selesai.</p>
         </div>
       </section>
 
@@ -64,7 +55,6 @@
           <p>Melihat dan mengelola riwayat semua panggilan.</p>
         </div>
 
-        <!-- Filter & Hapus History (Struktur dan ID tidak berubah) -->
         <div class="history-actions">
           <label for="filter-date"><i class="fas fa-calendar-day"></i> Filter tanggal:</label>
           <input type="date" id="filter-date">
@@ -75,7 +65,6 @@
           <button id="delete-history-btn"><i class="fas fa-eraser"></i> Hapus</button>
         </div>
 
-        <!-- Tabel History (Struktur tidak berubah) -->
         <table class="history-table">
           <thead>
             <tr>
@@ -86,19 +75,17 @@
             </tr>
           </thead>
           <tbody id="history-table">
-            <!-- Data akan diisi oleh JavaScript -->
           </tbody>
         </table>
       </section>
     </main>
   </div>
 
-  <!-- 5. SENTUHAN PROFESIONAL: Tambahkan footer -->
-  <footer>
+  <!-- 3. FOOTER DENGAN CLASS BARU UNTUK STYLING -->
+  <footer class="site-footer">
     <p>&copy; 2024 CareAssist Notify. All Rights Reserved.</p>
   </footer>
 
-  <!-- Logika aplikasi tetap sama -->
   <script type="module" src="app.js"></script>
 </body>
 </html>
