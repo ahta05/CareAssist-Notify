@@ -23,6 +23,30 @@ const handledList = document.getElementById('handled-list');
 const historyTable = document.getElementById('history-table');
 
 // =======================
+// FUNGSI UNTUK MODAL KONFIRMASI KUSTOM
+// =======================
+function showConfirmModal(message, onConfirm) {
+  const modal = document.getElementById('confirm-modal');
+  const modalBody = modal.querySelector('.modal-body p');
+  modalBody.textContent = message; // Ubah pesan di modal
+  modal.style.display = 'flex';
+  
+  const confirmBtn = document.getElementById('confirm-delete-btn');
+  // Hapus listener lama untuk mencegah duplikasi eksekusi
+  confirmBtn.replaceWith(confirmBtn.cloneNode(true)); 
+  const newConfirmBtn = document.getElementById('confirm-delete-btn');
+  
+  newConfirmBtn.addEventListener('click', () => {
+    onConfirm(); // Jalankan fungsi hapus
+    closeConfirmModal();
+  });
+}
+
+function closeConfirmModal() {
+  document.getElementById('confirm-modal').style.display = 'none';
+}
+
+// =======================
 // CARD BUILDER
 // =======================
 function buildCard(room, key, alert) {
@@ -134,32 +158,32 @@ document.getElementById('tab-history').onclick = () => {
 };
 
 // =======================
-// CLEAR HANDLED ALERTS (Fitur Baru: Hapus card handled dari active, bukan history)
+// CLEAR HANDLED ALERTS (Menggunakan Modal Kustom)
 // =======================
-document.getElementById('clear-handled-btn').onclick = async () => {  // Asumsi button id="clear-handled-btn" ditambah di dashboard.html
-  if (!confirm("Apakah Anda yakin ingin membersihkan semua alerts yang sudah ditangani? Ini akan menghapus dari tampilan aktif.")) {
-    return;
-  }
+document.getElementById('clear-handled-btn').onclick = async () => {
+  const message = "Apakah Anda yakin ingin membersihkan semua alerts yang sudah ditangani? Ini akan menghapusnya dari tampilan aktif.";
+  
+  showConfirmModal(message, async () => {
+    try {
+      const snapshot = await get(ref(db, 'alerts_active'));
+      const data = snapshot.val() || {};
 
-  try {
-    const snapshot = await get(ref(db, 'alerts_active'));
-    const data = snapshot.val() || {};
-
-    const promises = [];
-    Object.entries(data).forEach(([room, alerts]) => {
-      Object.entries(alerts || {}).forEach(([key, alert]) => {
-        if (alert.status === 'Ditangani') {
-          promises.push(remove(ref(db, `alerts_active/${room}/${key}`)));
-        }
+      const promises = [];
+      Object.entries(data).forEach(([room, alerts]) => {
+        Object.entries(alerts || {}).forEach(([key, alert]) => {
+          if (alert.status === 'Ditangani') {
+            promises.push(remove(ref(db, `alerts_active/${room}/${key}`)));
+          }
+        });
       });
-    });
-    await Promise.all(promises);
+      await Promise.all(promises);
 
-    alert("Alerts ditangani berhasil dibersihkan!");
-  } catch (error) {
-    console.error("Error clearing handled alerts:", error);
-    alert("Gagal membersihkan alerts. Coba lagi.");
-  }
+      alert("Alerts ditangani berhasil dibersihkan!"); // Bisa diganti dengan toast notification di masa depan
+    } catch (error) {
+      console.error("Error clearing handled alerts:", error);
+      alert("Gagal membersihkan alerts. Coba lagi.");
+    }
+  });
 };
 
 // =======================
@@ -219,7 +243,7 @@ document.getElementById('filter-btn').onclick = async () => {
 };
 
 // =======================
-// HAPUS HISTORY (Force fallback manual)
+// HAPUS HISTORY (Menggunakan Modal Kustom)
 // =======================
 document.getElementById('delete-history-btn').onclick = async () => {
   const deleteDate = document.getElementById('delete-date').value;
@@ -228,54 +252,54 @@ document.getElementById('delete-history-btn').onclick = async () => {
     return;
   }
 
-  if (!confirm(`Apakah Anda yakin ingin menghapus semua history pada tanggal ${deleteDate}? Tindakan ini tidak bisa dibatalkan!`)) {
-    return;
-  }
+  const message = `Apakah Anda yakin ingin menghapus semua history pada tanggal ${deleteDate}? Tindakan ini tidak bisa dibatalkan!`;
 
-  try {
-    const selectedDate = new Date(deleteDate);
-    if (isNaN(selectedDate.getTime())) {
-      alert("Tanggal tidak valid!");
-      return;
-    }
-    const startOfDay = selectedDate.setHours(0, 0, 0, 0);
-    const endOfDay = selectedDate.setHours(23, 59, 59, 999);
+  showConfirmModal(message, async () => {
+    try {
+      const selectedDate = new Date(deleteDate);
+      if (isNaN(selectedDate.getTime())) {
+        alert("Tanggal tidak valid!");
+        return;
+      }
+      const startOfDay = selectedDate.setHours(0, 0, 0, 0);
+      const endOfDay = selectedDate.setHours(23, 59, 59, 999);
 
-    console.log("Delete: Input date:", deleteDate, "Start ms:", startOfDay, "End ms:", endOfDay);
+      console.log("Delete: Input date:", deleteDate, "Start ms:", startOfDay, "End ms:", endOfDay);
 
-    // Force fallback: Ambil semua, filter manual
-    const snapshot = await get(ref(db, 'alerts_history'));
-    const data = snapshot.val();
-    console.log("All history data for delete:", data);
+      // Force fallback: Ambil semua, filter manual
+      const snapshot = await get(ref(db, 'alerts_history'));
+      const data = snapshot.val();
+      console.log("All history data for delete:", data);
 
-    if (!data) {
-      alert("Tidak ada history sama sekali.");
-      return;
-    }
+      if (!data) {
+        alert("Tidak ada history sama sekali.");
+        return;
+      }
 
-    const promises = [];
-    Object.entries(data).forEach(([room, roomData]) => {
-      Object.entries(roomData || {}).forEach(([key, ev]) => {
-        const eventTime = ev.handledAt || ev.createdAt;
-        console.log("Delete check - Event time:", eventTime);
-        if (typeof eventTime === 'number' && eventTime >= startOfDay && eventTime <= endOfDay) {
-          promises.push(remove(ref(db, `alerts_history/${room}/${key}`)));
-        }
+      const promises = [];
+      Object.entries(data).forEach(([room, roomData]) => {
+        Object.entries(roomData || {}).forEach(([key, ev]) => {
+          const eventTime = ev.handledAt || ev.createdAt;
+          console.log("Delete check - Event time:", eventTime);
+          if (typeof eventTime === 'number' && eventTime >= startOfDay && eventTime <= endOfDay) {
+            promises.push(remove(ref(db, `alerts_history/${room}/${key}`)));
+          }
+        });
       });
-    });
 
-    if (promises.length === 0) {
-      alert("Tidak ada history yang cocok untuk dihapus.");
-      return;
+      if (promises.length === 0) {
+        alert("Tidak ada history yang cocok untuk dihapus.");
+        return;
+      }
+
+      await Promise.all(promises);
+      alert("History berhasil dihapus!"); // Bisa diganti dengan toast notification di masa depan
+      renderHistory();
+    } catch (error) {
+      console.error("Error deleting history:", error);
+      alert(`Gagal menghapus history: ${error.message}.`);
     }
-
-    await Promise.all(promises);
-    alert("History berhasil dihapus!");
-    renderHistory();
-  } catch (error) {
-    console.error("Error deleting history:", error);
-    alert(`Gagal menghapus history: ${error.message}.`);
-  }
+  });
 };
 
 // =======================
