@@ -29,7 +29,7 @@ const historyTable = document.getElementById('history-table');
 let activeAlerts = new Map();
 
 // =======================
-// FUNGSI UNTUK MODAL KONFIRMASI KUSTOM
+// FUNGSI UNTUK MODAL KONFIRMASI KUSTOM (PERBAIKAN TOMBOL)
 // =======================
 function showConfirmModal(message, onConfirm) {
   const modal = document.getElementById('confirm-modal');
@@ -37,14 +37,20 @@ function showConfirmModal(message, onConfirm) {
   modalBody.textContent = message;
   modal.style.display = 'flex';
   
+  // --- Handle Tombol "Hapus" ---
   const confirmBtn = document.getElementById('confirm-delete-btn');
   confirmBtn.replaceWith(confirmBtn.cloneNode(true)); 
   const newConfirmBtn = document.getElementById('confirm-delete-btn');
-  
   newConfirmBtn.addEventListener('click', () => {
     onConfirm();
     closeConfirmModal();
   });
+
+  // --- Handle Tombol "Batal" (PERBAIKAN) ---
+  const cancelBtn = modal.querySelector('.btn-cancel');
+  cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+  const newCancelBtn = modal.querySelector('.btn-cancel');
+  newCancelBtn.addEventListener('click', closeConfirmModal);
 }
 
 function closeConfirmModal() {
@@ -118,7 +124,7 @@ function buildCard(room, key, alert) {
 }
 
 // =======================
-// MAIN LISTENER (VERSI UNTUK NOTIFIKASI SUARA UNTUK DATA BARU & PEMBARUAN)
+// MAIN LISTENER (VERSI LOGIKA SUARA YANG TEPAT)
 // =======================
 function listenAlerts() {
   onValue(ref(db, 'alerts_active'), snap => {
@@ -126,23 +132,46 @@ function listenAlerts() {
     const currentAlerts = new Map();
     let shouldPlaySound = false;
 
-    activeList.innerHTML = '';
-    handledList.innerHTML = '';
-
+    // --- BANDINGKAN DATA LAMA DENGAN BARU ---
     Object.entries(data).forEach(([room, alerts]) => {
       Object.entries(alerts || {}).forEach(([key, alert]) => {
         const alertKey = `${room}/${key}`;
-        // Gunakan timestamp yang paling relevan untuk mendeteksi perubahan
-        const lastTimestamp = alert.handledAt || alert.createdAt || 0;
-        currentAlerts.set(alertKey, lastTimestamp);
+        currentAlerts.set(alertKey, alert);
 
-        const previousTimestamp = activeAlerts.get(alertKey);
+        const previousAlert = activeAlerts.get(alertKey);
 
-        // Jika alert ini BARU (belum pernah ada) ATAU timestamp-nya BERUBAH
-        if (previousTimestamp === undefined || previousTimestamp !== lastTimestamp) {
+        // KONDISI 1: Alert ini BENAR-BENAR BARU (belum pernah ada)
+        if (!previousAlert) {
           shouldPlaySound = true;
+          return; // Lanjut ke alert berikutnya
         }
 
+        // KONDISI 2: Alert ini sudah ada, tapi STATUSNYA MASIH AKTIF dan DATANYA DIPERBARUI
+        // (misalnya, timestamp berubah karena tombol ditekan lagi)
+        const wasActive = previousAlert.status !== 'Ditangani';
+        const isActive = alert.status !== 'Ditangani';
+
+        if (wasActive && isActive) {
+          // Bandingkan timestamp yang relevan untuk melihat adanya perubahan
+          const lastTimestamp = previousAlert.handledAt || previousAlert.createdAt;
+          const currentTimestamp = alert.handledAt || alert.createdAt;
+          if (lastTimestamp !== currentTimestamp) {
+            shouldPlaySound = true;
+          }
+        }
+      });
+    });
+
+    // --- MAINKAN SUARA JIKA PERLU ---
+    if (shouldPlaySound) {
+      playNotificationSound();
+    }
+
+    // --- UPDATE UI ---
+    activeList.innerHTML = '';
+    handledList.innerHTML = '';
+    Object.entries(data).forEach(([room, alerts]) => {
+      Object.entries(alerts || {}).forEach(([key, alert]) => {
         const card = buildCard(room, key, alert);
         alert.status === 'Ditangani'
           ? handledList.appendChild(card)
@@ -150,11 +179,7 @@ function listenAlerts() {
       });
     });
 
-    if (shouldPlaySound) {
-      playNotificationSound();
-    }
-
-    // Perbarui Map untuk pengecekan selanjutnya
+    // --- SIMPAN DATA SAAT INI UNTUK PERBANDINGAN SELANJUTNYA ---
     activeAlerts = currentAlerts;
   });
 }
