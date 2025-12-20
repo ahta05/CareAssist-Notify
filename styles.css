@@ -1,34 +1,26 @@
 /* ==========================================
-   CARE ASSIST NOTIFY - GAYA "VISUAL WAH"
-   Tema: Modern, Glassmorphism, & Animasi Dinamis
+   CARE ASSIST NOTIFY - GAYA HYBRID
+   Tema: Elegan Blue Spectrum + Prioritas Warna Standar
    ========================================== */
 
-/* 1. DEFINISI VARIABEL TEMA (Ditambah Gradien) */
+/* 1. DEFINISI VARIABEL TEMA (PALET BIRU UNTUK UI UMUM) */
 :root {
+  /* Gradien Background dari Biru Langit ke Abu-abu Silver */
   --bg-color-start: #e0eafc;
   --bg-color-end: #cfdef3;
-  --card-bg: rgba(255, 255, 255, 0.7); /* Glassmorphism */
+  --bg-color-3: #f0f4f8;
+  --bg-color-4: #d9e2ec;
+
+  --card-bg: rgba(255, 255, 255, 0.75);
   --text-color: #212529;
-  --text-muted: #6c757d;
-  --border-color: rgba(255, 255, 255, 0.18);
+  --text-muted: #495057;
+  --border-color: rgba(255, 255, 255, 0.3);
 
-  --primary-color: #0A4D68;
-  --secondary-color: #05BFDB;
-  --accent-color: #339af0;
+  --primary-color: #0A4D68; /* Navy Blue */
+  --secondary-color: #0077b6; /* Blue Ocean */
+  --accent-color: #48cae4; /* Sky Blue */
 
-  --priority-high-bg: rgba(230, 57, 70, 0.15);
-  --priority-high-border: #E63946;
-  --priority-high-text: #D62828;
-
-  --priority-medium-bg: rgba(255, 138, 0, 0.15);
-  --priority-medium-border: #FF8A00;
-  --priority-medium-text: #E85D04;
-
-  --priority-low-bg: rgba(22, 163, 74, 0.15);
-  --priority-low-border: #16A34A;
-  --priority-low-text: #15803D;
-
-  --font-family: 'Poppins', 'Roboto', 'Segoe UI', sans-serif; /* Font yang lebih stylish */
+  --font-family: 'Poppins', 'Roboto', 'Segoe UI', sans-serif;
   --border-radius: 16px;
   --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
   --shadow-hover: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
@@ -37,8 +29,8 @@
 /* 2. BACKGROUND ANIMASI & TIPOGRAFI */
 body {
   font-family: var(--font-family);
-  /* Background Gradien Animasi */
-  background: linear-gradient(-45deg, var(--bg-color-start), var(--bg-color-end), #fbc2eb, #a6c1ee);
+  /* Background Gradien Biru Animasi */
+  background: linear-gradient(-45deg, var(--bg-color-start), var(--bg-color-end), var(--bg-color-3), var(--bg-color-4));
   background-size: 400% 400%;
   animation: gradientShift 15s ease infinite;
   color: var(--text-color);
@@ -55,9 +47,9 @@ body {
 }
 
 h1 {
-  font-size: 3.5rem; /* Lebih besar */
+  font-size: 3.5rem;
   text-align: center;
-  /* Teks Gradien */
+  /* Teks Gradien Biru */
   background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -76,17 +68,18 @@ nav button {
   margin: 0 12px;
   padding: 14px 28px;
   border: none;
-  border-radius: 50px; /* Sangat rounded */
+  border-radius: 50px;
+  /* Gradien Tombol Biru */
   background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   color: #FFFFFF;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Transisi elastis */
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: var(--shadow);
   position: relative;
   overflow: hidden;
 }
-nav button::before { /* Efek kilau saat hover */
+nav button::before {
   content: "";
   position: absolute;
   top: 0;
@@ -116,11 +109,9 @@ nav button:hover {
   box-shadow: var(--shadow);
   transition: all 0.4s ease;
   border-left: 6px solid transparent;
-  /* Efek Kaca */
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--border-color);
-  /* Animasi masuk */
   animation: slideInFade 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   opacity: 0;
   transform: translateY(30px);
@@ -138,7 +129,6 @@ nav button:hover {
   transform: translateY(-5px) scale(1.02);
 }
 .card.active { 
-  /* Efek Pulse untuk yang aktif */
   animation: pulse 2s infinite;
 }
 @keyframes pulse {
@@ -158,13 +148,33 @@ nav button:hover {
   transform: scale(0.98);
 }
 
-/* 4. WARNA PRIORITAS (Tetap Sama) */
-.card.red { border-left-color: var(--priority-high-border); background: var(--priority-high-bg); }
-.card.white { border-left-color: var(--priority-low-border); background: var(--priority-low-bg); }
-.card.yellow { border-left-color: var(--priority-medium-border); background: var(--priority-medium-bg); }
-.card.kondisi.infus { border-left-color: var(--priority-high-border); background: var(--priority-high-bg); }
-.card.pertolongan.medis { border-left-color: var(--priority-medium-border); background: var(--priority-medium-bg); }
-.card.pertolongan.non-medis { border-left-color: var(--priority-low-border); background: var(--priority-low-bg); }
+/* 4. WARNA PRIORITAS (DIKEMBALIKAN KE ASLI) */
+.card.red {
+  border-left: 6px solid #e74c3c; /* Merah Darurat */
+  background: rgba(231, 76, 60, 0.1);
+}
+.card.white {
+  border-left: 6px solid #ecf0f1; /* Putih/Silver untuk Rendah */
+  background: rgba(236, 240, 241, 0.1);
+}
+.card.yellow {
+  border-left: 6px solid #f1c40f; /* Kuning untuk Sedang */
+  background: rgba(241, 196, 15, 0.1);
+}
+
+/* Menyesuaikan class prioritas yang lebih spesifik (SESUAI KODE ASLI ANDA) */
+.card.kondisi.infus { 
+  border-left: 6px solid #f1c40f; /* Kuning */
+  background: rgba(241, 196, 15, 0.1);
+}
+.card.pertolongan.medis { 
+  border-left: 6px solid #e74c3c; /* Merah */
+  background: rgba(231, 76, 60, 0.1);
+}
+.card.pertolongan.non-medis { 
+  border-left: 6px solid #2ecc71; /* Hijau */
+  background: rgba(46, 204, 113, 0.1);
+}
 
 /* 5. DETAIL & TEKS */
 .details { flex: 1; }
@@ -189,6 +199,7 @@ nav button:hover {
   border: none;
   border-radius: 50px;
   cursor: pointer;
+  /* Gradien Tombol Aksi */
   background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   color: #FFFFFF;
   font-weight: bold;
@@ -207,7 +218,7 @@ nav button:hover {
   transform: none;
 }
 
-/* 6. HALAMAN RIWAYAT (Juga Ditingkatkan) */
+/* 6. HALAMAN RIWAYAT */
 .history-actions { margin: 20px 0; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
 .history-actions label { font-weight: 600; color: var(--text-color); }
 .history-actions input[type="date"] {
