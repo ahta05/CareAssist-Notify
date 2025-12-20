@@ -1,5 +1,5 @@
 /* ==========================================
-   CARE ASSIST NOTIFY - GAYA HYBRID
+   CARE ASSIST NOTIFY - GAYA HYBRID (FINAL VERSION)
    Tema: Elegan Blue Spectrum + Prioritas Warna Standar
    ========================================== */
 
@@ -13,16 +13,16 @@
   --bg-color-3: #f0f4f8;
   --bg-color-4: #d9e2ec;
 
-  --card-bg: rgba(255, 255, 255, 0.75);
+  --card-bg: rgba(255, 255, 255, 0.85); /* Sedikit lebih pekat untuk kontras */
   --text-color: #212529;
   --text-muted: #495057;
-  --border-color: rgba(255, 255, 255, 0.3);
+  --border-color: rgba(0, 0, 0, 0.1); /* Border yang lebih jelas */
 
   --primary-color: #0A4D68; /* Navy Blue */
   --secondary-color: #0077b6; /* Blue Ocean */
   --accent-color: #48cae4; /* Sky Blue */
  
-  --font-family: 'Playfair Display', 'Georgia', serif;
+  --font-family: 'Poppins', 'Roboto', 'Segoe UI', sans-serif; /* Kembalikan ke Sans-Serif untuk keterbacaan */
   --border-radius: 16px;
   --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
   --shadow-hover: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
@@ -58,7 +58,6 @@ h1 {
   background-clip: text;
   margin-bottom: 40px;
   font-weight: 800;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
   font-family: 'Playfair Display', var(--font-family);
 }
 
@@ -128,7 +127,7 @@ nav button:hover {
   box-shadow: var(--shadow-hover);
 }
 
-/* 5. KARTU DENGAN EFEK GLASSMORPHISM */
+/* 5. KARTU (FINAL - TANPA ANIMASI YANG BERMASALAH) */
 .card {
   display: flex;
   justify-content: space-between;
@@ -138,74 +137,48 @@ nav button:hover {
   background: var(--card-bg);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
-  transition: all 0.4s ease;
+  transition: all 0.3s ease;
   border-left: 6px solid transparent;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border-color);
-  animation: slideInFade 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-@keyframes slideInFade {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  /* ANIMASI & EFEK YANG DISEBABKAN MASALAH SUDAH DIHAPUS */
 }
 
 .card:hover {
   box-shadow: var(--shadow-hover);
-  transform: translateY(-5px) scale(1.02);
-}
-.card.active { 
-  animation: pulse 2s infinite;
-}
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(10, 77, 104, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 15px rgba(10, 77, 104, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(10, 77, 104, 0);
-  }
-}
-.card.handled { 
-  opacity: 0.4;
-  filter: grayscale(0.8);
-  transform: scale(0.98);
+  transform: translateY(-3px);
 }
 
-/* 6. WARNA PRIORITAS (DIKEMBALIKAN KE ASLI) */
+.card.handled { 
+  opacity: 0.5;
+  filter: grayscale(0.8);
+}
+
+/* 6. WARNA PRIORITAS */
 .card.red {
-  border-left: 6px solid #e74c3c;
+  border-left-color: #e74c3c;
   background: rgba(231, 76, 60, 0.1);
 }
 .card.white {
-  border-left: 6px solid #ecf0f1;
+  border-left-color: #ecf0f1;
   background: rgba(236, 240, 241, 0.1);
 }
 .card.yellow {
-  border-left: 6px solid #f1c40f;
+  border-left-color: #f1c40f;
   background: rgba(241, 196, 15, 0.1);
 }
 .card.kondisi.infus { 
-  border-left: 6px solid #f1c40f;
+  border-left-color: #f1c40f;
   background: rgba(241, 196, 15, 0.1);
 }
 .card.pertolongan.medis { 
-  border-left: 6px solid #e74c3c;
+  border-left-color: #e74c3c;
   background: rgba(231, 76, 60, 0.1);
 }
 .card.pertolongan.non-medis { 
-  border-left: 6px solid #2ecc71;
+  border-left-color: #2ecc71;
   background: rgba(46, 204, 113, 0.1);
 }
 
-/* 7. GAYA SEDERHANA UNTUK DETAIL KARTU (PERBAIKAN BUG) */
+/* 7. GAYA UNTUK DETAIL KARTU */
 .card-details-simple {
   flex: 1;
   color: var(--text-color);
@@ -231,7 +204,7 @@ nav button:hover {
   background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   color: #FFFFFF;
   font-weight: bold;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(10, 77, 104, 0.4);
 }
 .card button:hover {
@@ -254,7 +227,6 @@ nav button:hover {
   border-radius: 10px;
   border: 1px solid var(--border-color);
   background: var(--card-bg);
-  backdrop-filter: blur(5px);
   color: var(--text-color);
   font-size: 1rem;
 }
@@ -266,7 +238,7 @@ nav button:hover {
   background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   color: #FFFFFF;
   font-weight: bold;
-  transition: all 0.4s ease;
+  transition: all 0.3s ease;
   box-shadow: var(--shadow);
 }
 .history-actions button:hover {
@@ -282,8 +254,6 @@ nav button:hover {
   border-radius: var(--border-radius);
   overflow: hidden;
   box-shadow: var(--shadow);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border-color);
 }
 .history-table th, .history-table td { padding: 16px 18px; text-align: left; border-bottom: 1px solid var(--border-color); }
 .history-table th {
@@ -333,8 +303,6 @@ nav button:hover {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
 }
 .modal-content {
   position: relative;
@@ -343,8 +311,6 @@ nav button:hover {
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-hover);
   border: 1px solid var(--border-color);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   max-width: 450px;
   width: 90%;
   animation: modalFadeIn 0.3s ease-out;
