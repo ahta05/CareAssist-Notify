@@ -23,6 +23,12 @@ const handledList = document.getElementById('handled-list');
 const historyTable = document.getElementById('history-table');
 
 // =======================
+// VARIABEL UNTUK MELACAK ALERT (DIUBAH DARI SET KE MAP)
+// =======================
+// Gunakan Map untuk menyimpan kunci alert dan timestamp terakhir yang dilihat
+let activeAlerts = new Map();
+
+// =======================
 // FUNGSI UNTUK MODAL KONFIRMASI KUSTOM
 // =======================
 function showConfirmModal(message, onConfirm) {
@@ -46,6 +52,16 @@ function closeConfirmModal() {
 }
 
 // =======================
+// FUNGSI PEMUTAR SUARA
+// =======================
+function playNotificationSound() {
+  const sound = document.getElementById('notification-sound');
+  if (sound) {
+    sound.play().catch(error => console.error("Error playing sound:", error));
+  }
+}
+
+// =======================
 // CARD BUILDER (VERSION WITH ICONS)
 // =======================
 function buildCard(room, key, alert) {
@@ -55,8 +71,7 @@ function buildCard(room, key, alert) {
   const colorClass = alert.type === 'infus' ? 'yellow' : alert.type === 'nonmedis' ? 'white' : alert.type === 'medis' ? 'red' : '';
   card.className = `card ${colorClass} ${alert.status === 'Ditangani' ? 'handled' : 'active'}`;
 
-  // Tentukan ikon berdasarkan jenis
-  let iconClass = 'fas fa-question-circle'; // Default
+  let iconClass = 'fas fa-question-circle';
   if (alert.type === 'infus') iconClass = 'fas fa-droplet';
   if (alert.type === 'medis') iconClass = 'fas fa-stethoscope';
   if (alert.type === 'nonmedis') iconClass = 'fas fa-hands-helping';
@@ -103,25 +118,48 @@ function buildCard(room, key, alert) {
 }
 
 // =======================
-// MAIN LISTENER
+// MAIN LISTENER (VERSI UNTUK NOTIFIKASI SUARA UNTUK DATA BARU & PEMBARUAN)
 // =======================
 function listenAlerts() {
   onValue(ref(db, 'alerts_active'), snap => {
+    const data = snap.val() || {};
+    const currentAlerts = new Map();
+    let shouldPlaySound = false;
+
     activeList.innerHTML = '';
     handledList.innerHTML = '';
 
-    const data = snap.val() || {};
     Object.entries(data).forEach(([room, alerts]) => {
       Object.entries(alerts || {}).forEach(([key, alert]) => {
+        const alertKey = `${room}/${key}`;
+        // Gunakan timestamp yang paling relevan untuk mendeteksi perubahan
+        const lastTimestamp = alert.handledAt || alert.createdAt || 0;
+        currentAlerts.set(alertKey, lastTimestamp);
+
+        const previousTimestamp = activeAlerts.get(alertKey);
+
+        // Jika alert ini BARU (belum pernah ada) ATAU timestamp-nya BERUBAH
+        if (previousTimestamp === undefined || previousTimestamp !== lastTimestamp) {
+          shouldPlaySound = true;
+        }
+
         const card = buildCard(room, key, alert);
         alert.status === 'Ditangani'
           ? handledList.appendChild(card)
           : activeList.appendChild(card);
       });
     });
+
+    if (shouldPlaySound) {
+      playNotificationSound();
+    }
+
+    // Perbarui Map untuk pengecekan selanjutnya
+    activeAlerts = currentAlerts;
   });
 }
 
+// ... (Kode lainnya seperti renderHistory, tab switching, dll, tetap sama)
 // =======================
 // HISTORY (READ ONLY)
 // =======================
