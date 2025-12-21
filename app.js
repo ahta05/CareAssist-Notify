@@ -103,10 +103,14 @@ function closeConfirmModal() {
 // FUNGSI UNTUK TEMA (LIGHT/DARK)
 // =======================
 function applyTheme(theme) {
+  const logo = document.getElementById('main-logo');
+
   if (theme === 'dark') {
     document.body.classList.add('dark-mode');
+    logo.src = 'logo-dark.png'; // TAMBAHKAN BARIS INI
   } else {
     document.body.classList.remove('dark-mode');
+    logo.src = 'logo-light.png'; // TAMBAHKAN BARIS INI
   }
 }
 
