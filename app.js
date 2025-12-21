@@ -21,9 +21,8 @@ const auth = getAuth(app);
 const activeList = document.getElementById('active-list');
 const handledList = document.getElementById('handled-list');
 const historyTable = document.getElementById('history-table');
-const settingsPanel = document.getElementById('settings-panel');
 const settingsToggleBtn = document.getElementById('settings-toggle-btn');
-const settingsIcon = settingsToggleBtn.querySelector('i');
+const dropdownContent = document.querySelector('.dropdown-content'); // Untuk toggle dropdown
 
 // =======================
 // VARIABEL UNTUK MELACAK ALERT & FLAG
@@ -41,7 +40,7 @@ function loadSettings() {
 
   document.getElementById('sound-toggle').checked = soundEnabled;
   document.getElementById('notification-toggle').checked = notificationEnabled;
-  document.getElementById('theme-toggle').checked = theme === 'dark';
+  document.getElementById('theme-select').value = theme; // Ubah ke select untuk tema
 
   // Terapkan tema yang disimpan
   applyTheme(theme);
@@ -140,7 +139,7 @@ function buildCard(room, key, alert) {
   let iconClass = 'fas fa-question-circle';
   if (alert.type === 'infus') iconClass = 'fas fa-droplet';
   if (alert.type === 'medis') iconClass = 'fas fa-stethoscope';
-  if (alert.type === 'nonmedis' iconClass = 'fas fa-hands-helping';
+  if (alert.type === 'nonmedis') iconClass = 'fas fa-hands-helping';  // Perbaikan: Tambah tanda kurung buka (
 
   card.innerHTML = `
     <div class="alert-icon">
@@ -236,7 +235,6 @@ function listenAlerts() {
   });
 }
 
-// ... (Kode lainnya seperti renderHistory, tab switching, dll, tetap sama)
 // =======================
 // HISTORY (READ ONLY)
 // =======================
@@ -259,20 +257,49 @@ function renderHistory() {
   });
 }
 
-// ... (Kode lainnya seperti tab switching, clear handled alerts, filter history, delete history, logout, dll, tetap sama)
 // =======================
 // TAB SWITCHING
 // =======================
 document.getElementById('tab-dashboard').onclick = () => {
   document.getElementById('dashboard').style.display = 'block';
   document.getElementById('history').style.display = 'none';
-  settingsPanel.style.display = 'none'; // Sembunyikan panel settings saat pindah tab
+  dropdownContent.classList.remove('show'); // Sembunyikan dropdown saat pindah tab
 };
 document.getElementById('tab-history').onclick = () => {
   document.getElementById('dashboard').style.display = 'none';
   document.getElementById('history').style.display = 'block';
-  settingsPanel.style.display = 'none'; // Sembunykan panel settings saat pindah tab
+  dropdownContent.classList.remove('show'); // Sembunyikan dropdown saat pindah tab
 };
+
+// =======================
+// SETTINGS DROPDOWN TOGGLE (SEBAGAI OVERLAY)
+// =======================
+settingsToggleBtn.addEventListener('click', (e) => {
+  e.stopPropagation(); // Cegah event bubbling
+  dropdownContent.classList.toggle('show'); // Toggle class untuk show/hide
+});
+
+// Klik di luar dropdown untuk close
+document.addEventListener('click', (e) => {
+  if (!settingsToggleBtn.contains(e.target) && !dropdownContent.contains(e.target)) {
+    dropdownContent.classList.remove('show');
+  }
+});
+
+// Event listeners untuk setting toggles
+document.getElementById('sound-toggle').addEventListener('change', (e) => {
+  saveSetting('careassist_sound_enabled', e.target.checked);
+});
+
+document.getElementById('notification-toggle').addEventListener('change', (e) => {
+  saveSetting('careassist_notification_enabled', e.target.checked);
+});
+
+document.getElementById('theme-select').addEventListener('change', (e) => {
+  const theme = e.target.value;
+  saveSetting('careassist_theme', theme);
+  applyTheme(theme);
+});
 
 // =======================
 // CLEAR HANDLED ALERTS
@@ -297,10 +324,9 @@ document.getElementById('clear-handled-btn').onclick = async () => {
       console.error("Error clearing handled alerts:", error);
       alert("Gagal membersihkan alerts. Coba lagi.");
     }
-  };
+  });
 };
 
-// ... (Kode lainnya seperti filter history, delete history, logout, dll, tetap sama)
 // =======================
 // FILTER HISTORY
 // =======================
@@ -318,7 +344,7 @@ document.getElementById('filter-btn').onclick = async () => {
     }
     const startOfDay = selectedDate.setHours(0, 0, 0, 0);
     const endOfDay = selectedDate.setHours(23, 59, 59, 999);
-    const snapshot = await get(ref, 'alerts_history'));
+    const snapshot = await get(ref(db, 'alerts_history'));  // Perbaikan: Tambah (db,
     const data = snapshot.val() || {};
     historyTable.innerHTML = '';
     let hasData = false;
@@ -347,79 +373,28 @@ document.getElementById('filter-btn').onclick = async () => {
   }
 };
 
-// ... (Kode lainnya seperti delete history, logout, dll, tetap sama)
 // =======================
-// DELETE HISTORY
+// DELETE HISTORY (TIDAK ADA DI SETTING, HANYA DI HISTORY PAGE)
 // =======================
-document.getElementById('delete-history-btn').onclick = async () => {
-  const deleteDate = document.getElementById('delete-date').value;
-  if (!deleteDate) {
-    alert("Pilih tanggal untuk hapus!");
-    return;
-  }
-  const message = `Apakah Anda yakin ingin menghapus semua history pada tanggal ${deleteDate}? Tindakan ini tidak bisa dibatalkan!`;
-  showConfirmModal(message, async () => {
-    try {
-      const selectedDate = new Date(deleteDate);
-      if (isNaN(selectedDate.getTime())) {
-        alert("Tanggal tidak valid!");
-        return;
-      }
-      const startOfDay = selectedDate.setHours(0, 0, 0, 0);
-      const endOfDay = selectedDate.setHours(23, 59, 59, 999);
-      const snapshot = await get(ref, 'alerts_history'));
-      const data = snapshot.val();
-      if (!data) {
-        alert("Tidak ada history sama sekali.");
-        return;
-      }
-      const promises = [];
-      Object.entries(data).forEach(([room, roomData]) => {
-        Object.entries(roomData || {}).forEach(([key, ev]) => {
-          const eventTime = ev.handledAt || ev.createdAt;
-          if (typeof eventTime === 'number' && eventTime >= startOfDay && eventTime <= endOfDay) {
-            promises.push(remove(ref(db, `alerts_history/${room}/${key}`)));
-          }
-        });
-      });
-      if (promises.length === 0) {
-        alert("Tidak ada history yang cocok untuk dihapus.");
-        return;
-      }
-      await Promise.all(promises);
-      alert("History berhasil dihapus!");
-      renderHistory();
-    } catch (error) {
-      console.error("Error deleting history:", error);
-      alert(`Gagal menghapus history: ${error.message}.`);
-    }
-  };
-};
+// (Tidak ada kode delete di sini karena sudah dihapus dari setting, sesuai permintaan)
 
-// ... (Kode lainnya seperti logout, dll, tetap sama)
 // =======================
 // LOGOUT
 // =======================
 document.getElementById('logout-btn').onclick = async () => {
   try {
     await signOut(auth);
-    switch (auth) {
-      window.location.href = "index.html";
-    }
+    window.location.href = "index.html";  // Perbaikan: Hapus switch yang salah
   } catch (error) {
-    switch (error.code) {
-      case 'auth/network-request-failed':
-        alert("Gagal terhubung ke server. Periksa koneksi internet Anda.");
-        break;
-      case 'auth/user-not-found':
-        alert("Pengguna tidak ditemukan. Coba login kembali.");
-        break;
-      case 'auth/too-many-requests':
-        alert("Terlalu banyak percoba login. Coba lagi beberapa saat lagi.");
-        break;
-      default:
-        alert("Gagal logout. Coba lagi.");
-        break;
+    console.error("Error logging out:", error);
+    if (error.code === 'auth/network-request-failed') {
+      alert("Gagal terhubung ke server. Periksa koneksi internet Anda.");
+    } else if (error.code === 'auth/user-not-found') {
+      alert("Pengguna tidak ditemukan. Coba login kembali.");
+    } else if (error.code === 'auth/too-many-requests') {
+      alert("Terlalu banyak percoba login. Coba lagi beberapa saat lagi.");
+    } else {
+      alert("Gagal logout. Coba lagi.");
     }
   }
 };
@@ -439,4 +414,4 @@ onAuthStateChanged(auth, user => {
   // Mulai listener
   listenAlerts();
   renderHistory();
-};
+});
