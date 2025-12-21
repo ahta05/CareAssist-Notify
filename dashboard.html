@@ -13,17 +13,19 @@
 
   <header>
     <div class="header-content">
-      <!-- 1. GUNAKAN ICON KUSTOM -->
       <h1><img src="icon.png" alt="CareAssist Notify Icon" class="brand-icon"> CareAssist Notify</h1>
-      
-      <!-- 2. TAGLINE DENGAN CLASS BARU -->
       <p class="tagline">Sistem Manajemen Panggilan Pasien Real-Time</p>
     </div>
     <nav>
-      <button id="tab-dashboard"><i class="fas fa-house-chimney-medical"></i> Dashboard</button>
-      <button id="tab-history"><i class="fas fa-clock-rotate-left"></i> History</button>
-      <button id="clear-handled-btn"><i class="fas fa-broom"></i> Bersihkan Status</button>
-      <button id="logout-btn" class="logout-btn"><i class="fas fa-right-from-bracket"></i> Logout</button>
+      <div class="nav-left">
+        <button id="tab-dashboard"><i class="fas fa-house-chimney-medical"></i> Dashboard</button>
+        <button id="tab-history"><i class="fas fa-clock-rotate-left"></i> History</button>
+        <button id="clear-handled-btn"><i class="fas fa-broom"></i> Bersihkan Status</button>
+        <button id="logout-btn" class="logout-btn"><i class="fas fa-right-from-bracket"></i> Logout</button>
+      </div>
+      <div class="nav-right">
+        <button id="settings-toggle-btn" class="settings-btn"><i class="fas fa-cog"></i></button>
+      </div>
     </nav>
   </header>
 
@@ -79,6 +81,48 @@
           </tbody>
         </table>
       </section>
+
+      <!-- ========================================== -->
+      <!-- PANEL PENGATURAN TERSEMBUNYI (TAMBAHAN) -->
+      <!-- ========================================== -->
+      <section id="settings-panel" style="display:none;">
+        <div class="section-header">
+          <h2><i class="fas fa-cog"></i> Pengaturan</h2>
+          <p>Sesuaikan preferensi notifikasi dan data.</p>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>Notifikasi Suara</h3>
+            <p>Mainkan suara setiap kali ada panggilan baru atau pembaruan.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="sound-toggle" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>Notifikasi Browser</h3>
+            <p>Tampilkan notifikasi native di sistem operasi (Windows/macOS).</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="notification-toggle" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>Manajemen Riwayat</h3>
+            <p>Hapus seluruh riwayat panggilan yang tersimpan. Tindakan ini tidak dapat dibatalkan.</p>
+          </div>
+          <button id="delete-all-history-btn" class="btn-danger">
+            <i class="fas fa-trash-alt"></i> Hapus Seluruh Riwayat
+          </button>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -87,9 +131,7 @@
     <p>&copy; 2024 CareAssist Notify. All Rights Reserved.</p>
   </footer>
 
-  <!-- ========================================== -->
-  <!-- MODAL KONFIRMASI CUSTOM (TAMBAHAN) -->
-  <!-- ========================================== -->
+  <!-- MODAL KONFIRMASI CUSTOM -->
   <div id="confirm-modal" class="modal">
     <div class="modal-overlay" onclick="closeConfirmModal()"></div>
     <div class="modal-content">
@@ -100,7 +142,7 @@
         <p>Apakah Anda yakin ingin menghapus riwayat untuk tanggal ini? Tindakan ini tidak dapat dibatalkan.</p>
       </div>
       <div class="modal-footer">
-        <button class="btn-cancel">
+        <button class="btn-cancel" onclick="closeConfirmModal()">
           <i class="fas fa-times"></i> Batal
         </button>
         <button class="btn-confirm-delete" id="confirm-delete-btn">
