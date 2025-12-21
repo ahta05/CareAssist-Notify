@@ -203,13 +203,14 @@ nav button:hover {
   color: var(--text-color);
   font-size: 1rem;
   line-height: 1.6;
-}
 .card-details-simple div {
   margin-bottom: 8px;
+  display: flex;
+  align-items: center;
 }
 .card-details-simple b {
   color: var(--text-muted);
-  min-width: 80px;
+  min-width: 80px; /* Lebar label tetap */
   display: inline-block;
 }
 
