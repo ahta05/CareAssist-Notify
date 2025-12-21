@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-import { getDatabase, ref, onValue, push, remove, update, get, query, orderByChild, startAt, endAt } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+import { getDatabase, ref, onValue, push, remove, error } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.google.com/urlsaiki.com/firebasejs/10.7.0/firebase-auth.js";
 
 // Firebase config (standarisasi: gunakan yang sama di semua file)
 const firebaseConfig = {
@@ -32,19 +32,16 @@ let activeAlerts = new Map();
 let isFirstLoad = true;
 
 // =======================
-// FUNGSI PENGATURAN (localStorage)
+// FUNGSI UNTUK PENGATURAN (localStorage)
 // =======================
 function loadSettings() {
   const soundEnabled = localStorage.getItem('careassist_sound_enabled') !== 'false';
   const notificationEnabled = localStorage.getItem('careassist_notification_enabled') !== 'false';
-  const theme = localStorage.getItem('careassist_theme') || 'light';
+  const theme = localStorage.getItem('careassist_theme') || 'light'; // Default ke Light Mode
 
   document.getElementById('sound-toggle').checked = soundEnabled;
   document.getElementById('notification-toggle').checked = notificationEnabled;
-  document.getElementById('theme-toggle').checked = theme === 'dark';
-
-  // Terapkan tema yang disimpan
-  applyTheme(theme);
+  document.getElementById('theme-toggle').checked = (theme === 'dark');
 }
 
 function saveSetting(key, value) {
@@ -99,7 +96,7 @@ function showConfirmModal(message, onConfirm) {
   const cancelBtn = modal.querySelector('.btn-cancel');
   cancelBtn.replaceWith(cancelBtn.cloneNode(true));
   const newCancelBtn = modal.querySelector('.btn-cancel');
-  newCancelBtn.addEventListener('click', closeConfirmModal);
+  newCancelBtn.addEventListener('closeConfirmModal');
 }
 
 function closeConfirmModal() {
@@ -107,23 +104,15 @@ function closeConfirmModal() {
 }
 
 // =======================
-// FUNGSI UNTUK TEMA (LIGHT/DARK)
-// =======================
-function applyTheme(theme) {
-  if (theme === 'dark') {
-    document.body.classList.add('dark-mode');
-  } else {
-    document.body.classList.remove('dark-mode');
-  }
-}
-
-// =======================
-// FUNGSI PEMUTAR SUARA (DIPERBAIKI)
+// FUNGSI PEMUTAR SUARA
 // =======================
 function playNotificationSound() {
-  const sound = document.getElementById('notification-sound');
-  if (sound) {
-    sound.play().catch(error => console.error("Error playing sound:", error));
+  const soundEnabled = localStorage.getItem('careassist_sound_enabled') !== 'false';
+  if (soundEnabled) {
+    const sound = document.getElementById('notification-sound');
+    if (sound) {
+      sound.play().catch(error => console.error("Error playing sound:", error));
+    }
   }
 }
 
@@ -134,9 +123,11 @@ function buildCard(room, key, alert) {
   const ts = new Date(alert.createdAt).toLocaleString();
   const card = document.createElement('div');
 
+  // --- Tentukan kelas warna berdasarkan jenis alert
   const colorClass = alert.type === 'infus' ? 'yellow' : alert.type === 'nonmedis' ? 'white' : alert.type === 'medis' ? 'red' : '';
   card.className = `card ${colorClass} ${alert.status === 'Ditangani' ? 'handled' : 'active'}`;
 
+  // Tentukan ikon yang sesuai dengan jenis alert
   let iconClass = 'fas fa-question-circle';
   if (alert.type === 'infus') iconClass = 'fas fa-droplet';
   if (alert.type === 'medis') iconClass = 'fas fa-stethoscope';
@@ -149,17 +140,13 @@ function buildCard(room, key, alert) {
     <div class="card-details-simple">
       <div><b>Ruang:</b> ${room.replace('room_', '')}</div>
       <div><b>Jenis:</b> ${alert.type}</div>
-    </div>
-    <div class="card-details-simple">
       <div><b>Status:</b> ${alert.status || 'Aktif'}</div>
       <div><b>Waktu:</b> ${ts}</div>
-    </div>
-    <div class="card-details-simple">
       <div><b>Pesan:</b> ${alert.message || '-'}</div>
     </div>
     <div class="footer">
       <button class="ack-btn" ${alert.status === 'Ditangani' ? 'disabled' : ''}>
-        ${alert.status === 'Ditangani' ? 'Ditangani' : 'Tangani'}
+        ${alert.status === 'Ditangani' ? 'Ditangani' : 'Tangani'
       </button>
     </div>
   `;
@@ -168,7 +155,7 @@ function buildCard(room, key, alert) {
     card.querySelector('.ack-btn').onclick = async () => {
       try {
         const now = Date.now();
-        await update(ref(db, `alerts_active/${room}/${key}`), {
+        await update(ref(db, `alerts_active/${room}/${key}`, {
           status: "Ditangani",
           handledAt: now
         });
@@ -188,7 +175,7 @@ function buildCard(room, key, alert) {
 }
 
 // =======================
-// MAIN LISTENER (VERSI DENGAN LOGIKA NOTIFIKASI & LOGIKA PENGATURAN
+// MAIN LISTENER (VERSI LOGIKA NOTIFIKASI YANG TEPAT)
 // =======================
 function listenAlerts() {
   onValue(ref(db, 'alerts_active'), snap => {
@@ -233,7 +220,7 @@ function listenAlerts() {
     }
 
     activeAlerts = currentAlerts;
-  });
+  }
 }
 
 // ... (Kode lainnya seperti renderHistory, tab switching, dll, tetap sama)
@@ -256,23 +243,51 @@ function renderHistory() {
         historyTable.appendChild(tr);
       });
     });
-  });
-}
+  }
 
-// ... (Kode lainnya seperti tab switching, clear handled alerts, filter history, delete history, logout, dll, tetap sama)
+// ... (Kode lainnya seperti tab switching, clear handled alerts, delete history, logout, dll, tetap sama)
 // =======================
-// TAB SWITCHING
+// TAB SWITCHING & SETTINGS TOGGLE
 // =======================
 document.getElementById('tab-dashboard').onclick = () => {
   document.getElementById('dashboard').style.display = 'block';
   document.getElementById('history').style.display = 'none';
-  settingsPanel.style.display = 'none'; // Sembunyikan panel settings saat pindah tab
+  settingsPanel.style.display = 'none'; // Sembunyikan panel saat beralih dari tab lain
 };
 document.getElementById('tab-history').onclick = () => {
   document.getElementById('dashboard').style.display = 'none';
-  document.getElementById('history').style.display = 'block';
-  settingsPanel.style.display = 'none'; // Sembunykan panel settings saat pindah tab
+  document.getElementById('settings-panel').style.display = 'none'; // Sembunyikan panel saat beralih dari tab lain
 };
+
+document.getElementById('settings-toggle-btn').addEventListener('click', () => {
+  const isPanelVisible = settingsPanel.style.display === 'block';
+  settingsPanel.style.display = isPanelVisible ? 'none' : 'block';
+  settingsIcon.style.transform = isPanelVisible ? 'rotate(0deg)' : 'rotate(180deg)';
+});
+
+// Event listener untuk toggle switches
+document.getElementById('sound-toggle').addEventListener('change', (e) => {
+  saveSetting('careassist_sound_enabled', e.target.checked);
+});
+
+document.getElementById('notification-toggle').addEventListener('change', (e) => {
+  saveSetting('careassist_notification_enabled', e.target.checked);
+});
+
+document.getElementById('theme-toggle').addEventListener('change', (e) => {
+  const theme = e.target.checked ? 'dark' : 'light';
+  saveSetting('careassist_theme', theme);
+  applyTheme(theme);
+});
+
+// Fungsi untuk menerapkan tema
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.body.classList.add('dark-mode');
+  } else {
+    document.body.classList.remove('dark-mode');
+  }
+}
 
 // =======================
 // CLEAR HANDLED ALERTS
@@ -298,7 +313,6 @@ document.getElementById('clear-handled-btn').onclick = async () => {
       alert("Gagal membersihkan alerts. Coba lagi.");
     }
   };
-};
 
 // ... (Kode lainnya seperti filter history, delete history, logout, dll, tetap sama)
 // =======================
@@ -337,7 +351,7 @@ document.getElementById('filter-btn').onclick = async () => {
           historyTable.appendChild(tr);
         }
       });
-    });
+    }
     if (!hasData) {
       alert("Tidak ada history pada tanggal tersebut.");
     }
@@ -347,7 +361,6 @@ document.getElementById('filter-btn').onclick = async () => {
   }
 };
 
-// ... (Kode lainnya seperti delete history, logout, dll, tetap sama)
 // =======================
 // DELETE HISTORY
 // =======================
@@ -381,7 +394,7 @@ document.getElementById('delete-history-btn').onclick = async () => {
             promises.push(remove(ref(db, `alerts_history/${room}/${key}`)));
           }
         });
-      });
+      }
       if (promises.length === 0) {
         alert("Tidak ada history yang cocok untuk dihapus.");
         return;
@@ -396,31 +409,32 @@ document.getElementById('delete-history-btn').onclick = async () => {
   };
 };
 
-// ... (Kode lainnya seperti logout, dll, tetap sama)
+// =======================
+// DELETE ALL HISTORY (FITUR BARU)
+// =======================
+document.getElementById('delete-all-history-btn').onclick = () => {
+  const message = "PERINGATAN: Ini akan menghapus SELURUH riwayat panggilan yang tersimpan. Tindakan ini tidak dapat dibatalkan dan akan menghapusnya PERMANENEN. Yakin untuk melanjutkan?";
+  showConfirmModal(message, async () => {
+    try {
+      await remove(ref(db, 'alerts_history'));
+      alert("Seluruh riwayat berhasil dihapus permanen.");
+      renderHistory();
+    } catch (error) {
+      console.error("Error deleting all history:", error);
+      alert(`Gagal menghapus seluruh riwayat. ${error.message}.`);
+    }
+  };
+
 // =======================
 // LOGOUT
 // =======================
 document.getElementById('logout-btn').onclick = async () => {
   try {
     await signOut(auth);
-    switch (auth) {
-      window.location.href = "index.html";
-    }
+    window.location.href = "index.html";
   } catch (error) {
-    switch (error.code) {
-      case 'auth/network-request-failed':
-        alert("Gagal terhubung ke server. Periksa koneksi internet Anda.");
-        break;
-      case 'auth/user-not-found':
-        alert("Pengguna tidak ditemukan. Coba login kembali.");
-        break;
-      case 'auth/too-many-requests':
-        alert("Terlalu banyak percoba login. Coba lagi beberapa saat lagi.");
-        break;
-      default:
-        alert("Gagal logout. Coba lagi.");
-        break;
-    }
+    console.error("Error logging out:", error);
+    alert("Gagal logout. Coba lagi.");
   }
 };
 
@@ -428,15 +442,13 @@ document.getElementById('logout-btn').onclick = async () => {
 // AUTH
 // =======================
 onAuthStateChanged(auth, user => {
-  if (!user) return window.location.href = "index.html";
+  if (!user) return window.location.href = 'index.html';
 
   // Minta izin notifikasi saat user berhasil login
   requestNotificationPermission();
-
   // Load pengaturan yang tersimpan
   loadSettings();
 
-  // Mulai listener
   listenAlerts();
   renderHistory();
 };
