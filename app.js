@@ -87,11 +87,7 @@ function showConfirmModal(message, onConfirm) {
   const confirmBtn = document.getElementById('confirm-delete-btn');
   const newConfirmBtn = confirmBtn.cloneNode(true);
   confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-
-  newConfirmBtn.addEventListener('click', () => {
-    onConfirm();
-    closeConfirmModal();
-  });
+  newConfirmBtn.addEventListener('click', () => { onConfirm(); closeConfirmModal(); });
 
   const cancelBtn = modal.querySelector('.btn-cancel');
   const newCancelBtn = cancelBtn.cloneNode(true);
@@ -125,7 +121,7 @@ function playNotificationSound() {
 }
 
 // =======================
-// CARD BUILDER
+// CARD BUILDER (STRUKTUR HTML DIPERBAIKI)
 // =======================
 function buildCard(room, key, alert) {
   const ts = new Date(alert.createdAt).toLocaleString();
@@ -140,18 +136,21 @@ function buildCard(room, key, alert) {
     case 'nonmedis': iconClass = 'fas fa-hands-helping'; break;
   }
 
+  // PERBAIKAN: Struktur HTML disesuaikan dengan CSS Flexbox yang baru
   card.innerHTML = `
     <div class="alert-icon"><i class="${iconClass}"></i></div>
-    <div class="card-details-simple">
-      <div><b>Ruang:</b> ${room.replace('room_', '')}</div>
-      <div><b>Jenis:</b> ${alert.type}</div>
-    </div>
-    <div class="card-details-simple">
-      <div><b>Status:</b> ${alert.status || 'Aktif'}</div>
-      <div><b>Waktu:</b> ${ts}</div>
-    </div>
-    <div class="card-details-simple">
-      <div><b>Pesan:</b> ${alert.message || '-'}</div>
+    <div class="card-details-container">
+      <div class="card-details-simple">
+        <div><b>Ruang:</b> ${room.replace('room_', '')}</div>
+        <div><b>Jenis:</b> ${alert.type}</div>
+      </div>
+      <div class="card-details-simple">
+        <div><b>Status:</b> ${alert.status || 'Aktif'}</div>
+        <div><b>Waktu:</b> ${ts}</div>
+      </div>
+      <div class="card-details-simple">
+        <div><b>Pesan:</b> ${alert.message || '-'}</div>
+      </div>
     </div>
     <div class="footer">
       <button class="ack-btn" ${alert.status === 'Ditangani' ? 'disabled' : ''}>
@@ -175,17 +174,14 @@ function buildCard(room, key, alert) {
   return card;
 }
 
-// ... (bagian atas file tetap sama) ...
-
 // =======================
-// MAIN LISTENER (PERBAIKAN LOGIKA NOTIFIKASI)
+// MAIN LISTENER (LOGIKA NOTIFIKASI SUDAH BENAR)
 // =======================
 function listenAlerts() {
   onValue(ref(db, 'alerts_active'), snap => {
     const data = snap.val() || {};
     const currentAlerts = new Map();
     let shouldNotify = false;
-
     activeList.innerHTML = '';
     handledList.innerHTML = '';
     let hasActiveAlerts = false, hasHandledAlerts = false;
@@ -194,20 +190,11 @@ function listenAlerts() {
       Object.entries(alerts || {}).forEach(([key, alert]) => {
         const alertKey = `${room}/${key}`;
         currentAlerts.set(alertKey, alert);
-
         const previousAlert = activeAlerts.get(alertKey);
 
-        // --- PERBAIKAN LOGIKA NOTIFIKASI YANG LEBIH KETAT ---
-        // Hanya beri notifikasi untuk alert yang statusnya AKTIF.
-        // Abaikan sepenuhnya transisi dari AKTIF -> DITANGANI.
+        // LOGIKA NOTIFIKASI YANG BENAR: HANYA UNTUK ALERT BARU ATAU DIPERBARUI YANG MASIH AKTIF
         if (alert.status !== 'Ditangani') {
-          // Kondisi 1: Alert ini benar-benar baru (tidak ada di snapshot sebelumnya)
-          if (!previousAlert) {
-            shouldNotify = true;
-          }
-          // Kondisi 2: Alert sudah ada dan statusnya AKTIF, tetapi timestamp-nya berubah.
-          // Ini menandakan pembaruan pada alert yang masih relevan.
-          else if (previousAlert.createdAt !== alert.createdAt) {
+          if (!previousAlert || previousAlert.createdAt !== alert.createdAt) {
             shouldNotify = true;
           }
         }
@@ -228,12 +215,10 @@ function listenAlerts() {
 
     if (shouldNotify && !isFirstLoad) {
       playNotificationSound();
-      // Ambil alert pertama yang memicu notifikasi untuk ditampilkan
       const newAlertEntry = [...currentAlerts.entries()].find(([key, alert]) => {
           const prev = activeAlerts.get(key);
           return (!prev || prev.createdAt !== alert.createdAt) && alert.status !== 'Ditangani';
       });
-
       if (newAlertEntry) {
         const [alertKey, alertData] = newAlertEntry;
         const [room] = alertKey.split('/');
@@ -248,8 +233,6 @@ function listenAlerts() {
   });
 }
 
-// ... (sisa file tetap sama) ...
-
 // =======================
 // HISTORY (READ ONLY)
 // =======================
@@ -262,12 +245,7 @@ function renderHistory() {
       Object.entries(roomData || {}).forEach(([key, ev]) => {
         hasHistoryData = true;
         const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${room.replace('room_', '')}</td>
-          <td>${ev.type}</td>
-          <td>${ev.status}</td>
-          <td>${new Date(ev.handledAt || ev.createdAt).toLocaleString()}</td>
-        `;
+        tr.innerHTML = `<td>${room.replace('room_', '')}</td><td>${ev.type}</td><td>${ev.status}</td><td>${new Date(ev.handledAt || ev.createdAt).toLocaleString()}</td>`;
         historyTable.appendChild(tr);
       });
     });
@@ -285,23 +263,17 @@ function initializeTabs() {
   const historyTab = document.getElementById('tab-history');
   const dashboardSection = document.getElementById('dashboard');
   const historySection = document.getElementById('history');
-
   dashboardTab.classList.add('active');
   dashboardSection.style.display = 'block';
   historySection.style.display = 'none';
-
   dashboardTab.onclick = () => {
-    dashboardTab.classList.add('active');
-    historyTab.classList.remove('active');
-    dashboardSection.style.display = 'block';
-    historySection.style.display = 'none';
+    dashboardTab.classList.add('active'); historyTab.classList.remove('active');
+    dashboardSection.style.display = 'block'; historySection.style.display = 'none';
     dropdownContent.classList.remove('show');
   };
   historyTab.onclick = () => {
-    historyTab.classList.add('active');
-    dashboardTab.classList.remove('active');
-    dashboardSection.style.display = 'none';
-    historySection.style.display = 'block';
+    historyTab.classList.add('active'); dashboardTab.classList.remove('active');
+    dashboardSection.style.display = 'none'; historySection.style.display = 'block';
     dropdownContent.classList.remove('show');
   };
 }
@@ -309,32 +281,18 @@ function initializeTabs() {
 // =======================
 // EVENT LISTENERS
 // =======================
-
-// --- Settings Dropdown Toggle ---
 settingsToggleBtn.addEventListener('click', (event) => {
-  event.stopPropagation();
-  dropdownContent.classList.toggle('show');
+  event.stopPropagation(); dropdownContent.classList.toggle('show');
 });
-
 document.addEventListener('click', (event) => {
   if (!settingsToggleBtn.contains(event.target) && !dropdownContent.contains(event.target)) {
     dropdownContent.classList.remove('show');
   }
 });
-
-// --- Event listeners untuk setting toggles ---
-document.getElementById('sound-toggle').addEventListener('change', (e) => {
-  saveSetting('careassist_sound_enabled', e.target.checked);
-});
-
-document.getElementById('notification-toggle').addEventListener('change', (e) => {
-  saveSetting('careassist_notification_enabled', e.target.checked);
-});
-
+document.getElementById('sound-toggle').addEventListener('change', (e) => { saveSetting('careassist_sound_enabled', e.target.checked); });
+document.getElementById('notification-toggle').addEventListener('change', (e) => { saveSetting('careassist_notification_enabled', e.target.checked); });
 document.getElementById('theme-select').addEventListener('change', (e) => {
-  const theme = e.target.value;
-  saveSetting('careassist_theme', theme);
-  applyTheme(theme);
+  const theme = e.target.value; saveSetting('careassist_theme', theme); applyTheme(theme);
 });
 
 // --- Clear Handled Alerts ---
@@ -353,59 +311,39 @@ document.getElementById('clear-handled-btn').onclick = () => {
         });
       });
       await Promise.all(promises);
-    } catch (error) {
-      console.error("Error clearing handled alerts:", error);
-      alert("Gagal membersihkan alerts. Coba lagi.");
-    }
+    } catch (error) { console.error("Error clearing handled alerts:", error); alert("Gagal membersihkan alerts. Coba lagi."); }
   });
 };
 
 // --- Filter History ---
 document.getElementById('filter-btn').onclick = async () => {
   const filterDate = document.getElementById('filter-date').value;
-  if (!filterDate) {
-    historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Silakan pilih tanggal terlebih dahulu.</td></tr>`;
-    return;
-  }
+  if (!filterDate) { historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Silakan pilih tanggal terlebih dahulu.</td></tr>`; return; }
   try {
     const selectedDate = new Date(filterDate);
-    if (isNaN(selectedDate.getTime())) {
-      historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Tanggal tidak valid.</td></tr>`;
-      return;
-    }
+    if (isNaN(selectedDate.getTime())) { historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Tanggal tidak valid.</td></tr>`; return; }
     const startOfDay = new Date(selectedDate.setHours(0, 0, 0, 0)).getTime();
     const endOfDay = new Date(selectedDate.setHours(23, 59, 59, 999)).getTime();
     const snapshot = await get(ref(db, 'alerts_history'));
-    const data = snapshot.val() || {};
-    historyTable.innerHTML = '';
-    let hasData = false;
+    const data = snapshot.val() || {}; historyTable.innerHTML = ''; let hasData = false;
     Object.entries(data).forEach(([room, roomData]) => {
       Object.entries(roomData || {}).forEach(([key, ev]) => {
         const eventTime = ev.handledAt || ev.createdAt;
         if (typeof eventTime === 'number' && eventTime >= startOfDay && eventTime <= endOfDay) {
-          hasData = true;
-          const tr = document.createElement('tr');
+          hasData = true; const tr = document.createElement('tr');
           tr.innerHTML = `<td>${room.replace('room_', '')}</td><td>${ev.type}</td><td>${ev.status}</td><td>${new Date(eventTime).toLocaleString()}</td>`;
           historyTable.appendChild(tr);
         }
       });
     });
-    if (!hasData) {
-      historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Tidak ada riwayat pada tanggal ${new Date(filterDate).toLocaleDateString('id-ID')}.</td></tr>`;
-    }
-  } catch (error) {
-    console.error("Error filtering history:", error);
-    historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Gagal memfilter history: ${error.message}.</td></tr>`;
-  }
+    if (!hasData) { historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Tidak ada riwayat pada tanggal ${new Date(filterDate).toLocaleDateString('id-ID')}.</td></tr>`; }
+  } catch (error) { console.error("Error filtering history:", error); historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Gagal memfilter history: ${error.message}.</td></tr>`; }
 };
 
 // --- Delete History by Date ---
 document.getElementById('delete-history-btn').onclick = async () => {
   const deleteDate = document.getElementById('delete-date').value;
-  if (!deleteDate) {
-    alert("Silakan pilih tanggal yang ingin dihapus riwayatnya.");
-    return;
-  }
+  if (!deleteDate) { alert("Silakan pilih tanggal yang ingin dihapus riwayatnya."); return; }
   const selectedDate = new Date(deleteDate);
   const formattedDate = selectedDate.toLocaleDateString('id-ID');
   const message = `Apakah Anda yakin ingin menghapus SEMUA riwayat panggilan pada tanggal ${formattedDate}? Tindakan ini tidak dapat dibatalkan.`;
@@ -414,8 +352,7 @@ document.getElementById('delete-history-btn').onclick = async () => {
       const startOfDay = new Date(selectedDate.setHours(0, 0, 0, 0)).getTime();
       const endOfDay = new Date(selectedDate.setHours(23, 59, 59, 999)).getTime();
       const snapshot = await get(ref(db, 'alerts_history'));
-      const data = snapshot.val() || {};
-      const promises = [];
+      const data = snapshot.val() || {}; const promises = [];
       Object.entries(data).forEach(([room, roomData]) => {
         Object.entries(roomData || {}).forEach(([key, ev]) => {
           const eventTime = ev.handledAt || ev.createdAt;
@@ -424,42 +361,24 @@ document.getElementById('delete-history-btn').onclick = async () => {
           }
         });
       });
-      if (promises.length === 0) {
-        alert(`Tidak ada riwayat pada tanggal ${formattedDate} untuk dihapus.`);
-        return;
-      }
+      if (promises.length === 0) { alert(`Tidak ada riwayat pada tanggal ${formattedDate} untuk dihapus.`); return; }
       await Promise.all(promises);
       alert(`Berhasil menghapus ${promises.length} riwayat pada tanggal ${formattedDate}.`);
       document.getElementById('delete-date').value = '';
-    } catch (error) {
-      console.error("Error deleting history:", error);
-      alert(`Gagal menghapus riwayat: ${error.message}.`);
-    }
+    } catch (error) { console.error("Error deleting history:", error); alert(`Gagal menghapus riwayat: ${error.message}.`); }
   });
 };
 
 // --- Logout ---
 document.getElementById('logout-btn').onclick = async () => {
-  try {
-    await signOut(auth);
-    window.location.href = "index.html";
-  } catch (error) {
-    console.error("Error logging out:", error);
-    alert("Gagal logout. Coba lagi.");
-  }
+  try { await signOut(auth); window.location.href = "index.html"; }
+  catch (error) { console.error("Error logging out:", error); alert("Gagal logout. Coba lagi."); }
 };
 
 // =======================
 // AUTH INITIALIZATION
 // =======================
 onAuthStateChanged(auth, user => {
-  if (!user) {
-    window.location.href = "index.html";
-    return;
-  }
-  requestNotificationPermission();
-  loadSettings();
-  initializeTabs();
-  listenAlerts();
-  renderHistory();
+  if (!user) { window.location.href = "index.html"; return; }
+  requestNotificationPermission(); loadSettings(); initializeTabs(); listenAlerts(); renderHistory();
 });
