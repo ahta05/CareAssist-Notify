@@ -176,13 +176,14 @@ function buildCard(room, key, alert) {
 }
 
 // =======================
-// MAIN LISTENER
+// MAIN LISTENER (PERBAIKAN LOGIKA NOTIFIKASI)
 // =======================
 function listenAlerts() {
   onValue(ref(db, 'alerts_active'), snap => {
     const data = snap.val() || {};
     const currentAlerts = new Map();
     let shouldNotify = false;
+
     activeList.innerHTML = '';
     handledList.innerHTML = '';
     let hasActiveAlerts = false, hasHandledAlerts = false;
@@ -191,9 +192,22 @@ function listenAlerts() {
       Object.entries(alerts || {}).forEach(([key, alert]) => {
         const alertKey = `${room}/${key}`;
         currentAlerts.set(alertKey, alert);
-        if (!activeAlerts.has(alertKey) || JSON.stringify(activeAlerts.get(alertKey)) !== JSON.stringify(alert)) {
-          shouldNotify = true;
+
+        const previousAlert = activeAlerts.get(alertKey);
+
+        // --- PERBAIKAN LOGIKA NOTIFIKASI DI SINI ---
+        // Hanya beri notifikasi jika alert adalah AKTIF dan merupakan data BARU atau data AKTIF yang DIPERBARUI.
+        if (alert.status !== 'Ditangani') {
+          // Kondisi 1: Alert ini benar-benar baru (tidak ada di snapshot sebelumnya)
+          if (!previousAlert) {
+            shouldNotify = true;
+          }
+          // Kondisi 2: Alert sudah ada, tetapi timestamp-nya berubah (menandakan pembaruan)
+          else if (previousAlert.createdAt !== alert.createdAt) {
+            shouldNotify = true;
+          }
         }
+
         const card = buildCard(room, key, alert);
         if (alert.status === 'Ditangani') {
           handledList.appendChild(card);
@@ -374,30 +388,23 @@ document.getElementById('filter-btn').onclick = async () => {
   }
 };
 
-// =======================
-// FITUR BARU: DELETE HISTORY BY DATE
-// =======================
+// --- Delete History by Date ---
 document.getElementById('delete-history-btn').onclick = async () => {
   const deleteDate = document.getElementById('delete-date').value;
   if (!deleteDate) {
     alert("Silakan pilih tanggal yang ingin dihapus riwayatnya.");
     return;
   }
-
   const selectedDate = new Date(deleteDate);
   const formattedDate = selectedDate.toLocaleDateString('id-ID');
-
   const message = `Apakah Anda yakin ingin menghapus SEMUA riwayat panggilan pada tanggal ${formattedDate}? Tindakan ini tidak dapat dibatalkan.`;
-  
   showConfirmModal(message, async () => {
     try {
       const startOfDay = new Date(selectedDate.setHours(0, 0, 0, 0)).getTime();
       const endOfDay = new Date(selectedDate.setHours(23, 59, 59, 999)).getTime();
-      
       const snapshot = await get(ref(db, 'alerts_history'));
       const data = snapshot.val() || {};
       const promises = [];
-
       Object.entries(data).forEach(([room, roomData]) => {
         Object.entries(roomData || {}).forEach(([key, ev]) => {
           const eventTime = ev.handledAt || ev.createdAt;
@@ -406,23 +413,19 @@ document.getElementById('delete-history-btn').onclick = async () => {
           }
         });
       });
-
       if (promises.length === 0) {
         alert(`Tidak ada riwayat pada tanggal ${formattedDate} untuk dihapus.`);
         return;
       }
-
       await Promise.all(promises);
       alert(`Berhasil menghapus ${promises.length} riwayat pada tanggal ${formattedDate}.`);
-      document.getElementById('delete-date').value = ''; // Kosongkan input setelah berhasil
-
+      document.getElementById('delete-date').value = '';
     } catch (error) {
       console.error("Error deleting history:", error);
       alert(`Gagal menghapus riwayat: ${error.message}.`);
     }
   });
 };
-
 
 // --- Logout ---
 document.getElementById('logout-btn').onclick = async () => {
