@@ -24,7 +24,54 @@
         <button id="logout-btn" class="logout-btn"><i class="fas fa-right-from-bracket"></i> Logout</button>
       </div>
       <div class="nav-right">
-        <button id="settings-toggle-btn" class="settings-btn"><i class="fas fa-cog"></i></button>
+        <!-- Dropdown Menu Settings -->
+        <div class="dropdown">
+          <button id="settings-toggle-btn" class="settings-btn">
+            <i class="fas fa-cog"></i> <i class="fas fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Notifikasi Suara</h3>
+                <p>Mainkan suara setiap kali ada panggilan baru atau pembaruan.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="sound-toggle" checked>
+                <span class="slider round"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Notifikasi Browser</h3>
+                <p>Tampilkan notifikasi native di sistem operasi (Windows/macOS).</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="notification-toggle" checked>
+                <span class="slider round"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Tema Aplikasi</h3>
+                <p>Pilih antara Light Mode dan Dark Mode.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider round"></span>
+              </label>
+            </div>
+            <hr class="dropdown-separator">
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Manajemen Riwayat</h3>
+                <p>Hapus seluruh riwayat panggilan yang tersimpan. Tindakan ini tidak dapat dibatalkan.</p>
+              </div>
+              <button id="delete-all-history-btn" class="btn-danger">
+                <i class="fas fa-trash-alt"></i> Hapus Seluruh Riwayat
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </nav>
   </header>
@@ -63,12 +110,7 @@
           <input type="date" id="filter-date">
           <button id="filter-btn"><i class="fas fa-filter"></i> Tampilkan</button>
 
-          <label for="delete-date"><i class="fas fa-trash-can"></i> Hapus history tanggal:</label>
-          <input type="date" id="delete-date">
-          <button id="delete-history-btn"><i class="fas fa-eraser"></i> Hapus</button>
-        </div>
-
-        <table class="history-table">
+          <table class="history-table">
           <thead>
             <tr>
               <th><i class="fas fa-door-open"></i> Nomor Ruang</th>
@@ -80,48 +122,6 @@
           <tbody id="history-table">
           </tbody>
         </table>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- PANEL PENGATURAN TERSEMBUNYI (TAMBAHAN) -->
-      <!-- ========================================== -->
-      <section id="settings-panel" style="display:none;">
-        <div class="section-header">
-          <h2><i class="fas fa-cog"></i> Pengaturan</h2>
-          <p>Sesuaikan preferensi notifikasi dan data.</p>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-info">
-            <h3>Notifikasi Suara</h3>
-            <p>Mainkan suara setiap kali ada panggilan baru atau pembaruan.</p>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="sound-toggle" checked>
-            <span class="slider round"></span>
-          </label>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-info">
-            <h3>Notifikasi Browser</h3>
-            <p>Tampilkan notifikasi native di sistem operasi (Windows/macOS).</p>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="notification-toggle" checked>
-            <span class="slider round"></span>
-          </label>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-info">
-            <h3>Manajemen Riwayat</h3>
-            <p>Hapus seluruh riwayat panggilan yang tersimpan. Tindakan ini tidak dapat dibatalkan.</p>
-          </div>
-          <button id="delete-all-history-btn" class="btn-danger">
-            <i class="fas fa-trash-alt"></i> Hapus Seluruh Riwayat
-          </button>
-        </div>
       </section>
     </main>
   </div>
