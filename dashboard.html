@@ -100,18 +100,24 @@
           <input type="date" id="filter-date">
           <button id="filter-btn"><i class="fas fa-filter"></i> Tampilkan</button>
 
-          <table class="history-table">
-          <thead>
-            <tr>
-              <th><i class="fas fa-door-open"></i> Nomor Ruang</th>
-              <th><i class="fas fa-exclamation-triangle"></i> Jenis Alert</th>
-              <th><i class="fas fa-info-circle"></i> Status</th>
-              <th><i class="fas fa-clock"></i> Waktu</th>
-            </tr>
-          </thead>
-          <tbody id="history-table">
-          </tbody>
-        </table>
+          <!-- Tambah menu hapus berdasarkan tanggal di history page -->
+          <label for="delete-date"><i class="fas fa-trash-alt"></i> Hapus berdasarkan tanggal:</label>
+          <input type="date" id="delete-date">
+          <button id="delete-history-btn" class="btn-danger"><i class="fas fa-trash"></i> Hapus</button>
+        </div>
+
+        <table class="history-table">
+        <thead>
+          <tr>
+            <th><i class="fas fa-door-open"></i> Nomor Ruang</th>
+            <th><i class="fas fa-exclamation-triangle"></i> Jenis Alert</th>
+            <th><i class="fas fa-info-circle"></i> Status</th>
+            <th><i class="fas fa-clock"></i> Waktu</th>
+          </tr>
+        </thead>
+        <tbody id="history-table">
+        </tbody>
+      </table>
       </section>
     </main>
   </div>
