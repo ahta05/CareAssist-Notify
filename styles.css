@@ -627,3 +627,76 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+/* ==========================================
+   GAYA UNTUK TEMA DARK MODE
+   ========================================== */
+
+/* -- Variabel tambahan untuk Dark Mode -- */
+:root.dark-mode {
+  --bg-color-start: #1a1a1a;
+  --bg-color-end: #2d343a;
+  --bg-color-3: #344a40;
+  --bg-color-4: #414a56;
+
+  --card-bg: rgba(30, 30, 30, 0.9);
+  --text-color: #e9ecef;
+  --text-muted: #adb5bd;
+  --border-color: rgba(255, 255, 255, 0.2);
+
+  --primary-color: #48cae4; /* Lebih terang untuk kontras di mode gelap */
+  --secondary-color: #90e0ef; /* Lebih terang untuk kontras di mode gelap */
+  --accent-color: #5dade2;
+
+  --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  --shadow-hover: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode {
+  background: linear-gradient(-45deg, var(--bg-color-start), var(--bg-color-end), var(--bg-color-3), var(--bg-color-4));
+}
+
+body.dark-mode .card {
+  border-color: var(--border-color);
+}
+
+body.dark-mode .card.red {
+  background: rgba(231, 76, 60, 0.3);
+}
+
+body.dark-mode .card.yellow {
+  background: rgba(241, 196, 15, 0.3);
+}
+
+body.dark-mode .card.white {
+  background: rgba(46, 204, 113, 0.3);
+}
+
+body.dark-mode .modal-content {
+  background: #2c3e50;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+body.dark-mode .modal-header h3 {
+  color: var(--accent-color);
+}
+
+body.dark-mode .btn-cancel {
+  background: #495057;
+  color: #e9ecef;
+}
+body.dark-mode .btn-cancel:hover {
+  background: #343a40;
+}
+
+body.dark-mode .history-table th {
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+}
+
+body.dark-mode .history-table tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .history-table tr:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
