@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebas
 import { getDatabase, ref, onValue, push, remove, update, get } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
-// Firebase config (standarisasi: gunakan yang sama di semua file)
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBiRnmrJwnYGdKtX5DR4mcsgsf_wkTo_V4",
   authDomain: "careassist-notify.firebaseapp.com",
@@ -41,8 +41,6 @@ function loadSettings() {
   document.getElementById('sound-toggle').checked = soundEnabled;
   document.getElementById('notification-toggle').checked = notificationEnabled;
   document.getElementById('theme-select').value = theme;
-
-  // Terapkan tema yang disimpan
   applyTheme(theme);
 }
 
@@ -87,7 +85,6 @@ function showConfirmModal(message, onConfirm) {
   modal.style.display = 'flex';
 
   const confirmBtn = document.getElementById('confirm-delete-btn');
-  // Hapus listener lama untuk mencegah duplikasi
   const newConfirmBtn = confirmBtn.cloneNode(true);
   confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
 
@@ -133,28 +130,18 @@ function playNotificationSound() {
 function buildCard(room, key, alert) {
   const ts = new Date(alert.createdAt).toLocaleString();
   const card = document.createElement('div');
-
   const colorClass = alert.type === 'infus' ? 'yellow' : alert.type === 'nonmedis' ? 'white' : alert.type === 'medis' ? 'red' : '';
   card.className = `card ${colorClass} ${alert.status === 'Ditangani' ? 'handled' : 'active'}`;
 
-  // PERBAIKAN: Gunakan switch untuk kode yang lebih rapi
   let iconClass = 'fas fa-question-circle';
   switch (alert.type) {
-    case 'infus':
-      iconClass = 'fas fa-droplet';
-      break;
-    case 'medis':
-      iconClass = 'fas fa-stethoscope';
-      break;
-    case 'nonmedis':
-      iconClass = 'fas fa-hands-helping';
-      break;
+    case 'infus': iconClass = 'fas fa-droplet'; break;
+    case 'medis': iconClass = 'fas fa-stethoscope'; break;
+    case 'nonmedis': iconClass = 'fas fa-hands-helping'; break;
   }
 
   card.innerHTML = `
-    <div class="alert-icon">
-      <i class="${iconClass}"></i>
-    </div>
+    <div class="alert-icon"><i class="${iconClass}"></i></div>
     <div class="card-details-simple">
       <div><b>Ruang:</b> ${room.replace('room_', '')}</div>
       <div><b>Jenis:</b> ${alert.type}</div>
@@ -185,7 +172,6 @@ function buildCard(room, key, alert) {
       }
     };
   }
-
   return card;
 }
 
@@ -197,23 +183,17 @@ function listenAlerts() {
     const data = snap.val() || {};
     const currentAlerts = new Map();
     let shouldNotify = false;
-
-    // PERBAIKAN: Kosongkan list terlebih dahulu
     activeList.innerHTML = '';
     handledList.innerHTML = '';
-
-    let hasActiveAlerts = false;
-    let hasHandledAlerts = false;
+    let hasActiveAlerts = false, hasHandledAlerts = false;
 
     Object.entries(data).forEach(([room, alerts]) => {
       Object.entries(alerts || {}).forEach(([key, alert]) => {
         const alertKey = `${room}/${key}`;
         currentAlerts.set(alertKey, alert);
-
         if (!activeAlerts.has(alertKey) || JSON.stringify(activeAlerts.get(alertKey)) !== JSON.stringify(alert)) {
           shouldNotify = true;
         }
-
         const card = buildCard(room, key, alert);
         if (alert.status === 'Ditangani') {
           handledList.appendChild(card);
@@ -225,13 +205,8 @@ function listenAlerts() {
       });
     });
 
-    // PERBAIKAN: Tampilkan empty state jika tidak ada data
-    if (!hasActiveAlerts) {
-      activeList.innerHTML = `<p class="empty-state"><i class="fas fa-check-circle"></i> Tidak ada panggilan aktif saat ini.</p>`;
-    }
-    if (!hasHandledAlerts) {
-      handledList.innerHTML = `<p class="empty-state"><i class="fas fa-clipboard-check"></i> Belum ada panggilan yang selesai.</p>`;
-    }
+    if (!hasActiveAlerts) activeList.innerHTML = `<p class="empty-state"><i class="fas fa-check-circle"></i> Tidak ada panggilan aktif saat ini.</p>`;
+    if (!hasHandledAlerts) handledList.innerHTML = `<p class="empty-state"><i class="fas fa-clipboard-check"></i> Belum ada panggilan yang selesai.</p>`;
 
     if (shouldNotify && !isFirstLoad) {
       playNotificationSound();
@@ -258,7 +233,6 @@ function renderHistory() {
     historyTable.innerHTML = '';
     const data = snap.val() || {};
     let hasHistoryData = false;
-
     Object.entries(data).forEach(([room, roomData]) => {
       Object.entries(roomData || {}).forEach(([key, ev]) => {
         hasHistoryData = true;
@@ -272,8 +246,6 @@ function renderHistory() {
         historyTable.appendChild(tr);
       });
     });
-
-    // PERBAIKAN: Tampilkan empty state jika tidak ada data
     if (!hasHistoryData) {
       historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Belum ada riwayat panggilan.</td></tr>`;
     }
@@ -289,7 +261,6 @@ function initializeTabs() {
   const dashboardSection = document.getElementById('dashboard');
   const historySection = document.getElementById('history');
 
-  // Set initial state
   dashboardTab.classList.add('active');
   dashboardSection.style.display = 'block';
   historySection.style.display = 'none';
@@ -320,7 +291,6 @@ settingsToggleBtn.addEventListener('click', (event) => {
   dropdownContent.classList.toggle('show');
 });
 
-// --- Klik di luar dropdown untuk menutup ---
 document.addEventListener('click', (event) => {
   if (!settingsToggleBtn.contains(event.target) && !dropdownContent.contains(event.target)) {
     dropdownContent.classList.remove('show');
@@ -396,7 +366,6 @@ document.getElementById('filter-btn').onclick = async () => {
       });
     });
     if (!hasData) {
-      // PERBAIKAN: Tampilkan pesan di dalam tabel, bukan dengan alert()
       historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Tidak ada riwayat pada tanggal ${new Date(filterDate).toLocaleDateString('id-ID')}.</td></tr>`;
     }
   } catch (error) {
@@ -404,6 +373,56 @@ document.getElementById('filter-btn').onclick = async () => {
     historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Gagal memfilter history: ${error.message}.</td></tr>`;
   }
 };
+
+// =======================
+// FITUR BARU: DELETE HISTORY BY DATE
+// =======================
+document.getElementById('delete-history-btn').onclick = async () => {
+  const deleteDate = document.getElementById('delete-date').value;
+  if (!deleteDate) {
+    alert("Silakan pilih tanggal yang ingin dihapus riwayatnya.");
+    return;
+  }
+
+  const selectedDate = new Date(deleteDate);
+  const formattedDate = selectedDate.toLocaleDateString('id-ID');
+
+  const message = `Apakah Anda yakin ingin menghapus SEMUA riwayat panggilan pada tanggal ${formattedDate}? Tindakan ini tidak dapat dibatalkan.`;
+  
+  showConfirmModal(message, async () => {
+    try {
+      const startOfDay = new Date(selectedDate.setHours(0, 0, 0, 0)).getTime();
+      const endOfDay = new Date(selectedDate.setHours(23, 59, 59, 999)).getTime();
+      
+      const snapshot = await get(ref(db, 'alerts_history'));
+      const data = snapshot.val() || {};
+      const promises = [];
+
+      Object.entries(data).forEach(([room, roomData]) => {
+        Object.entries(roomData || {}).forEach(([key, ev]) => {
+          const eventTime = ev.handledAt || ev.createdAt;
+          if (typeof eventTime === 'number' && eventTime >= startOfDay && eventTime <= endOfDay) {
+            promises.push(remove(ref(db, `alerts_history/${room}/${key}`)));
+          }
+        });
+      });
+
+      if (promises.length === 0) {
+        alert(`Tidak ada riwayat pada tanggal ${formattedDate} untuk dihapus.`);
+        return;
+      }
+
+      await Promise.all(promises);
+      alert(`Berhasil menghapus ${promises.length} riwayat pada tanggal ${formattedDate}.`);
+      document.getElementById('delete-date').value = ''; // Kosongkan input setelah berhasil
+
+    } catch (error) {
+      console.error("Error deleting history:", error);
+      alert(`Gagal menghapus riwayat: ${error.message}.`);
+    }
+  });
+};
+
 
 // --- Logout ---
 document.getElementById('logout-btn').onclick = async () => {
@@ -426,7 +445,7 @@ onAuthStateChanged(auth, user => {
   }
   requestNotificationPermission();
   loadSettings();
-  initializeTabs(); // Inisialisasi tab
+  initializeTabs();
   listenAlerts();
   renderHistory();
 });
