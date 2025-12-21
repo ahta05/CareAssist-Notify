@@ -21,12 +21,30 @@ const auth = getAuth(app);
 const activeList = document.getElementById('active-list');
 const handledList = document.getElementById('handled-list');
 const historyTable = document.getElementById('history-table');
+const settingsPanel = document.getElementById('settings-panel');
+const settingsToggleBtn = document.getElementById('settings-toggle-btn');
+const settingsIcon = settingsToggleBtn.querySelector('i');
 
 // =======================
 // VARIABEL UNTUK MELACAK ALERT & FLAG
 // =======================
 let activeAlerts = new Map();
-let isFirstLoad = true; // Flag untuk mencegah notifikasi saat load pertama
+let isFirstLoad = true;
+
+// =======================
+// FUNGSI PENGATURAN (localStorage)
+// =======================
+function loadSettings() {
+  const soundEnabled = localStorage.getItem('careassist_sound_enabled') !== 'false';
+  const notificationEnabled = localStorage.getItem('careassist_notification_enabled') !== 'false';
+
+  document.getElementById('sound-toggle').checked = soundEnabled;
+  document.getElementById('notification-toggle').checked = notificationEnabled;
+}
+
+function saveSetting(key, value) {
+  localStorage.setItem(key, value);
+}
 
 // =======================
 // FUNGSI UNTUK NOTIFIKASI NATIVE OS
@@ -45,7 +63,8 @@ async function requestNotificationPermission() {
 }
 
 function showBrowserNotification(title, options) {
-  if (Notification.permission === 'granted') {
+  const notificationEnabled = localStorage.getItem('careassist_notification_enabled') !== 'false';
+  if (notificationEnabled && Notification.permission === 'granted') {
     const notification = new Notification(title, options);
     notification.onclick = () => {
       window.focus();
@@ -62,11 +81,11 @@ function showConfirmModal(message, onConfirm) {
   const modalBody = modal.querySelector('.modal-body p');
   modalBody.textContent = message;
   modal.style.display = 'flex';
-  
+
   const confirmBtn = document.getElementById('confirm-delete-btn');
-  confirmBtn.replaceWith(confirmBtn.cloneNode(true)); 
+  confirmBtn.replaceWith(confirmBtn.cloneNode(true));
   const newConfirmBtn = document.getElementById('confirm-delete-btn');
-  
+
   newConfirmBtn.addEventListener('click', () => {
     onConfirm();
     closeConfirmModal();
@@ -83,12 +102,15 @@ function closeConfirmModal() {
 }
 
 // =======================
-// FUNGSI PEMUTAR SUARA
+// FUNGSI PEMUTAR SUARA (DIPERBAIKI)
 // =======================
 function playNotificationSound() {
-  const sound = document.getElementById('notification-sound');
-  if (sound) {
-    sound.play().catch(error => console.error("Error playing sound:", error));
+  const soundEnabled = localStorage.getItem('careassist_sound_enabled') !== 'false';
+  if (soundEnabled) {
+    const sound = document.getElementById('notification-sound');
+    if (sound) {
+      sound.play().catch(error => console.error("Error playing sound:", error));
+    }
   }
 }
 
@@ -98,7 +120,7 @@ function playNotificationSound() {
 function buildCard(room, key, alert) {
   const ts = new Date(alert.createdAt).toLocaleString();
   const card = document.createElement('div');
-  
+
   const colorClass = alert.type === 'infus' ? 'yellow' : alert.type === 'nonmedis' ? 'white' : alert.type === 'medis' ? 'red' : '';
   card.className = `card ${colorClass} ${alert.status === 'Ditangani' ? 'handled' : 'active'}`;
 
@@ -149,7 +171,7 @@ function buildCard(room, key, alert) {
 }
 
 // =======================
-// MAIN LISTENER (LOGIKA NOTIFIKASI YANG SUDAH DIPERBAIKI)
+// MAIN LISTENER (VERSI LOGIKA NOTIFIKASI YANG TEPAT)
 // =======================
 function listenAlerts() {
   onValue(ref(db, 'alerts_active'), snap => {
@@ -167,23 +189,8 @@ function listenAlerts() {
 
         const previousAlert = activeAlerts.get(alertKey);
 
-        // --- LOGIKA NOTIFIKASI YANG DIPERBAIKI ---
-        // Jika ini bukan pertama kali load
-        if (!isFirstLoad) {
-          // KONDISI 1: Alert ini benar-benar baru
-          if (!previousAlert) {
-            shouldNotify = true;
-          }
-          // KONDISI 2: Alert sudah ada, statusnya MASIH AKTIF, dan DATANYA berubah
-          else {
-            const wasActive = previousAlert.status !== 'Ditangani';
-            const isActive = alert.status !== 'Ditangani';
-            if (wasActive && isActive) {
-              if (JSON.stringify(previousAlert) !== JSON.stringify(alert)) {
-                shouldNotify = true;
-              }
-            }
-          }
+        if (!previousAlert || JSON.stringify(previousAlert) !== JSON.stringify(alert)) {
+          shouldNotify = true;
         }
 
         const card = buildCard(room, key, alert);
@@ -208,9 +215,7 @@ function listenAlerts() {
       }
     }
 
-    // Update state untuk pengecekan selanjutnya
     activeAlerts = currentAlerts;
-    isFirstLoad = false; // Set flag ke false setelah load pertama
   });
 }
 
@@ -238,16 +243,33 @@ function renderHistory() {
 }
 
 // =======================
-// TAB SWITCHING
+// TAB SWITCHING & SETTINGS TOGGLE
 // =======================
 document.getElementById('tab-dashboard').onclick = () => {
   document.getElementById('dashboard').style.display = 'block';
   document.getElementById('history').style.display = 'none';
+  settingsPanel.style.display = 'none';
 };
 document.getElementById('tab-history').onclick = () => {
   document.getElementById('dashboard').style.display = 'none';
   document.getElementById('history').style.display = 'block';
+  settingsPanel.style.display = 'none';
 };
+
+settingsToggleBtn.addEventListener('click', () => {
+  const isPanelVisible = settingsPanel.style.display === 'block';
+  settingsPanel.style.display = isPanelVisible ? 'none' : 'block';
+  settingsIcon.style.transform = isPanelVisible ? 'rotate(0deg)' : 'rotate(180deg)';
+});
+
+// Event listener untuk toggle switches
+document.getElementById('sound-toggle').addEventListener('change', (e) => {
+  saveSetting('careassist_sound_enabled', e.target.checked);
+});
+
+document.getElementById('notification-toggle').addEventListener('change', (e) => {
+  saveSetting('careassist_notification_enabled', e.target.checked);
+});
 
 // =======================
 // CLEAR HANDLED ALERTS
@@ -322,7 +344,7 @@ document.getElementById('filter-btn').onclick = async () => {
 };
 
 // =======================
-// HAPUS HISTORY
+// HAPUS HISTORY (PER TANGGAL)
 // =======================
 document.getElementById('delete-history-btn').onclick = async () => {
   const deleteDate = document.getElementById('delete-date').value;
@@ -370,6 +392,24 @@ document.getElementById('delete-history-btn').onclick = async () => {
 };
 
 // =======================
+// HAPUS SELURUH RIWAYAT (FITUR BARU)
+// =======================
+document.getElementById('delete-all-history-btn').onclick = () => {
+  const message = "PERINGATAN: Ini akan menghapus SELURUH riwayat panggilan yang tersimpan. Tindakan ini tidak dapat dibatalkan dan akan berdampak permanen. Yakin ingin melanjutkan?";
+  showConfirmModal(message, async () => {
+    try {
+      await remove(ref(db, 'alerts_history'));
+      alert("Seluruh riwayat berhasil dihapus permanen.");
+      renderHistory();
+    } catch (error) {
+      console.error("Error deleting all history:", error);
+      alert(`Gagal menghapus seluruh riwayat: ${error.message}.`);
+    }
+  });
+};
+
+
+// =======================
 // LOGOUT
 // =======================
 document.getElementById('logout-btn').onclick = async () => {
@@ -387,10 +427,13 @@ document.getElementById('logout-btn').onclick = async () => {
 // =======================
 onAuthStateChanged(auth, user => {
   if (!user) return window.location.href = "index.html";
-  
+
   // Minta izin notifikasi saat user berhasil login
   requestNotificationPermission();
   
+  // Load pengaturan yang tersimpan
+  loadSettings();
+
   listenAlerts();
   renderHistory();
 });
