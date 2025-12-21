@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-import { getDatabase, ref, onValue, push, remove, update, get, query, orderByChild, startAt, endAt } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+import { getDatabase, ref, onValue, push, remove, update, get } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
 // Firebase config (standarisasi: gunakan yang sama di semua file)
@@ -17,12 +17,12 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
 
-// DOM
+// DOM Elements
 const activeList = document.getElementById('active-list');
 const handledList = document.getElementById('handled-list');
 const historyTable = document.getElementById('history-table');
 const settingsToggleBtn = document.getElementById('settings-toggle-btn');
-const dropdownContent = document.querySelector('.dropdown-content'); // Untuk toggle dropdown
+const dropdownContent = document.querySelector('.dropdown-content');
 
 // =======================
 // VARIABEL UNTUK MELACAK ALERT & FLAG
@@ -40,7 +40,7 @@ function loadSettings() {
 
   document.getElementById('sound-toggle').checked = soundEnabled;
   document.getElementById('notification-toggle').checked = notificationEnabled;
-  document.getElementById('theme-select').value = theme; // Ubah ke select untuk tema
+  document.getElementById('theme-select').value = theme;
 
   // Terapkan tema yang disimpan
   applyTheme(theme);
@@ -87,8 +87,9 @@ function showConfirmModal(message, onConfirm) {
   modal.style.display = 'flex';
 
   const confirmBtn = document.getElementById('confirm-delete-btn');
-  confirmBtn.replaceWith(confirmBtn.cloneNode(true));
-  const newConfirmBtn = document.getElementById('confirm-delete-btn');
+  // Hapus listener lama untuk mencegah duplikasi
+  const newConfirmBtn = confirmBtn.cloneNode(true);
+  confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
 
   newConfirmBtn.addEventListener('click', () => {
     onConfirm();
@@ -96,8 +97,8 @@ function showConfirmModal(message, onConfirm) {
   });
 
   const cancelBtn = modal.querySelector('.btn-cancel');
-  cancelBtn.replaceWith(cancelBtn.cloneNode(true));
-  const newCancelBtn = modal.querySelector('.btn-cancel');
+  const newCancelBtn = cancelBtn.cloneNode(true);
+  cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
   newCancelBtn.addEventListener('click', closeConfirmModal);
 }
 
@@ -117,7 +118,7 @@ function applyTheme(theme) {
 }
 
 // =======================
-// FUNGSI PEMUTAR SUARA (DIPERBAIKI)
+// FUNGSI PEMUTAR SUARA
 // =======================
 function playNotificationSound() {
   const sound = document.getElementById('notification-sound');
@@ -136,10 +137,19 @@ function buildCard(room, key, alert) {
   const colorClass = alert.type === 'infus' ? 'yellow' : alert.type === 'nonmedis' ? 'white' : alert.type === 'medis' ? 'red' : '';
   card.className = `card ${colorClass} ${alert.status === 'Ditangani' ? 'handled' : 'active'}`;
 
+  // PERBAIKAN: Gunakan switch untuk kode yang lebih rapi
   let iconClass = 'fas fa-question-circle';
-  if (alert.type === 'infus') iconClass = 'fas fa-droplet';
-  if (alert.type === 'medis') iconClass = 'fas fa-stethoscope';
-  if (alert.type === 'nonmedis') iconClass = 'fas fa-hands-helping';  // Perbaikan: Tambah tanda kurung buka (
+  switch (alert.type) {
+    case 'infus':
+      iconClass = 'fas fa-droplet';
+      break;
+    case 'medis':
+      iconClass = 'fas fa-stethoscope';
+      break;
+    case 'nonmedis':
+      iconClass = 'fas fa-hands-helping';
+      break;
+  }
 
   card.innerHTML = `
     <div class="alert-icon">
@@ -167,15 +177,8 @@ function buildCard(room, key, alert) {
     card.querySelector('.ack-btn').onclick = async () => {
       try {
         const now = Date.now();
-        await update(ref(db, `alerts_active/${room}/${key}`), {
-          status: "Ditangani",
-          handledAt: now
-        });
-        await push(ref(db, `alerts_history/${room}`), {
-          ...alert,
-          status: "Ditangani",
-          handledAt: now
-        });
+        await update(ref(db, `alerts_active/${room}/${key}`), { status: "Ditangani", handledAt: now });
+        await push(ref(db, `alerts_history/${room}`), { ...alert, status: "Ditangani", handledAt: now });
       } catch (error) {
         console.error("Error handling alert:", error);
         alert("Gagal menangani alert. Coba lagi.");
@@ -187,7 +190,7 @@ function buildCard(room, key, alert) {
 }
 
 // =======================
-// MAIN LISTENER (VERSI DENGAN LOGIKA NOTIFIKASI & LOGIKA PENGATURAN
+// MAIN LISTENER
 // =======================
 function listenAlerts() {
   onValue(ref(db, 'alerts_active'), snap => {
@@ -195,43 +198,55 @@ function listenAlerts() {
     const currentAlerts = new Map();
     let shouldNotify = false;
 
+    // PERBAIKAN: Kosongkan list terlebih dahulu
     activeList.innerHTML = '';
     handledList.innerHTML = '';
+
+    let hasActiveAlerts = false;
+    let hasHandledAlerts = false;
 
     Object.entries(data).forEach(([room, alerts]) => {
       Object.entries(alerts || {}).forEach(([key, alert]) => {
         const alertKey = `${room}/${key}`;
         currentAlerts.set(alertKey, alert);
 
-        const previousAlert = activeAlerts.get(alertKey);
-
-        if (!previousAlert || JSON.stringify(previousAlert) !== JSON.stringify(alert)) {
+        if (!activeAlerts.has(alertKey) || JSON.stringify(activeAlerts.get(alertKey)) !== JSON.stringify(alert)) {
           shouldNotify = true;
         }
 
         const card = buildCard(room, key, alert);
-        alert.status === 'Ditangani'
-          ? handledList.appendChild(card)
-          : activeList.appendChild(card);
+        if (alert.status === 'Ditangani') {
+          handledList.appendChild(card);
+          hasHandledAlerts = true;
+        } else {
+          activeList.appendChild(card);
+          hasActiveAlerts = true;
+        }
       });
     });
 
-    if (shouldNotify) {
+    // PERBAIKAN: Tampilkan empty state jika tidak ada data
+    if (!hasActiveAlerts) {
+      activeList.innerHTML = `<p class="empty-state"><i class="fas fa-check-circle"></i> Tidak ada panggilan aktif saat ini.</p>`;
+    }
+    if (!hasHandledAlerts) {
+      handledList.innerHTML = `<p class="empty-state"><i class="fas fa-clipboard-check"></i> Belum ada panggilan yang selesai.</p>`;
+    }
+
+    if (shouldNotify && !isFirstLoad) {
       playNotificationSound();
       const firstNewAlert = currentAlerts.entries().next().value;
       if (firstNewAlert) {
         const [alertKey, alertData] = firstNewAlert;
-        const [room, key] = alertKey.split('/');
+        const [room] = alertKey.split('/');
         showBrowserNotification('CareAssist Notify - Alert Baru!', {
           body: `Ada panggilan dari Ruang ${room.replace('room_', '')} (${alertData.type})`,
-          icon: 'icon.png',
-          tag: alertKey,
-          requireInteraction: true
+          icon: 'icon.png', tag: alertKey, requireInteraction: true
         });
       }
     }
-
     activeAlerts = currentAlerts;
+    isFirstLoad = false;
   });
 }
 
@@ -242,8 +257,11 @@ function renderHistory() {
   onValue(ref(db, 'alerts_history'), snap => {
     historyTable.innerHTML = '';
     const data = snap.val() || {};
+    let hasHistoryData = false;
+
     Object.entries(data).forEach(([room, roomData]) => {
       Object.entries(roomData || {}).forEach(([key, ev]) => {
+        hasHistoryData = true;
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${room.replace('room_', '')}</td>
@@ -254,39 +272,62 @@ function renderHistory() {
         historyTable.appendChild(tr);
       });
     });
+
+    // PERBAIKAN: Tampilkan empty state jika tidak ada data
+    if (!hasHistoryData) {
+      historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Belum ada riwayat panggilan.</td></tr>`;
+    }
   });
 }
 
 // =======================
 // TAB SWITCHING
 // =======================
-document.getElementById('tab-dashboard').onclick = () => {
-  document.getElementById('dashboard').style.display = 'block';
-  document.getElementById('history').style.display = 'none';
-  dropdownContent.classList.remove('show'); // Sembunyikan dropdown saat pindah tab
-};
-document.getElementById('tab-history').onclick = () => {
-  document.getElementById('dashboard').style.display = 'none';
-  document.getElementById('history').style.display = 'block';
-  dropdownContent.classList.remove('show'); // Sembunyikan dropdown saat pindah tab
-};
+function initializeTabs() {
+  const dashboardTab = document.getElementById('tab-dashboard');
+  const historyTab = document.getElementById('tab-history');
+  const dashboardSection = document.getElementById('dashboard');
+  const historySection = document.getElementById('history');
+
+  // Set initial state
+  dashboardTab.classList.add('active');
+  dashboardSection.style.display = 'block';
+  historySection.style.display = 'none';
+
+  dashboardTab.onclick = () => {
+    dashboardTab.classList.add('active');
+    historyTab.classList.remove('active');
+    dashboardSection.style.display = 'block';
+    historySection.style.display = 'none';
+    dropdownContent.classList.remove('show');
+  };
+  historyTab.onclick = () => {
+    historyTab.classList.add('active');
+    dashboardTab.classList.remove('active');
+    dashboardSection.style.display = 'none';
+    historySection.style.display = 'block';
+    dropdownContent.classList.remove('show');
+  };
+}
 
 // =======================
-// SETTINGS DROPDOWN TOGGLE (SEBAGAI OVERLAY)
+// EVENT LISTENERS
 // =======================
-settingsToggleBtn.addEventListener('click', (e) => {
-  e.stopPropagation(); // Cegah event bubbling
-  dropdownContent.classList.toggle('show'); // Toggle class untuk show/hide
+
+// --- Settings Dropdown Toggle ---
+settingsToggleBtn.addEventListener('click', (event) => {
+  event.stopPropagation();
+  dropdownContent.classList.toggle('show');
 });
 
-// Klik di luar dropdown untuk close
-document.addEventListener('click', (e) => {
-  if (!settingsToggleBtn.contains(e.target) && !dropdownContent.contains(e.target)) {
+// --- Klik di luar dropdown untuk menutup ---
+document.addEventListener('click', (event) => {
+  if (!settingsToggleBtn.contains(event.target) && !dropdownContent.contains(event.target)) {
     dropdownContent.classList.remove('show');
   }
 });
 
-// Event listeners untuk setting toggles
+// --- Event listeners untuk setting toggles ---
 document.getElementById('sound-toggle').addEventListener('change', (e) => {
   saveSetting('careassist_sound_enabled', e.target.checked);
 });
@@ -301,11 +342,9 @@ document.getElementById('theme-select').addEventListener('change', (e) => {
   applyTheme(theme);
 });
 
-// =======================
-// CLEAR HANDLED ALERTS
-// =======================
-document.getElementById('clear-handled-btn').onclick = async () => {
-  const message = "Apakah Anda yakin ingin membersihkan semua alerts yang sudah ditangani? Ini akan menghapusnya dari tampilan aktif.";
+// --- Clear Handled Alerts ---
+document.getElementById('clear-handled-btn').onclick = () => {
+  const message = "Apakah Anda yakin ingin membersihkan semua alerts yang sudah ditangani?";
   showConfirmModal(message, async () => {
     try {
       const snapshot = await get(ref(db, 'alerts_active'));
@@ -319,7 +358,6 @@ document.getElementById('clear-handled-btn').onclick = async () => {
         });
       });
       await Promise.all(promises);
-      alert("Alerts ditangani berhasil dibersihkan!");
     } catch (error) {
       console.error("Error clearing handled alerts:", error);
       alert("Gagal membersihkan alerts. Coba lagi.");
@@ -327,24 +365,22 @@ document.getElementById('clear-handled-btn').onclick = async () => {
   });
 };
 
-// =======================
-// FILTER HISTORY
-// =======================
+// --- Filter History ---
 document.getElementById('filter-btn').onclick = async () => {
   const filterDate = document.getElementById('filter-date').value;
   if (!filterDate) {
-    alert("Pilih tanggal untuk filter!");
+    historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Silakan pilih tanggal terlebih dahulu.</td></tr>`;
     return;
   }
   try {
     const selectedDate = new Date(filterDate);
     if (isNaN(selectedDate.getTime())) {
-      alert("Tanggal tidak valid!");
+      historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Tanggal tidak valid.</td></tr>`;
       return;
     }
-    const startOfDay = selectedDate.setHours(0, 0, 0, 0);
-    const endOfDay = selectedDate.setHours(23, 59, 59, 999);
-    const snapshot = await get(ref(db, 'alerts_history'));  // Perbaikan: Tambah (db,
+    const startOfDay = new Date(selectedDate.setHours(0, 0, 0, 0)).getTime();
+    const endOfDay = new Date(selectedDate.setHours(23, 59, 59, 999)).getTime();
+    const snapshot = await get(ref(db, 'alerts_history'));
     const data = snapshot.val() || {};
     historyTable.innerHTML = '';
     let hasData = false;
@@ -354,64 +390,43 @@ document.getElementById('filter-btn').onclick = async () => {
         if (typeof eventTime === 'number' && eventTime >= startOfDay && eventTime <= endOfDay) {
           hasData = true;
           const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${room.replace('room_', '')}</td>
-            <td>${ev.type}</td>
-            <td>${ev.status}</td>
-            <td>${new Date(eventTime).toLocaleString()}</td>
-          `;
+          tr.innerHTML = `<td>${room.replace('room_', '')}</td><td>${ev.type}</td><td>${ev.status}</td><td>${new Date(eventTime).toLocaleString()}</td>`;
           historyTable.appendChild(tr);
         }
       });
     });
     if (!hasData) {
-      alert("Tidak ada history pada tanggal tersebut.");
+      // PERBAIKAN: Tampilkan pesan di dalam tabel, bukan dengan alert()
+      historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Tidak ada riwayat pada tanggal ${new Date(filterDate).toLocaleDateString('id-ID')}.</td></tr>`;
     }
   } catch (error) {
     console.error("Error filtering history:", error);
-    alert(`Gagal memfilter history: ${error.message}.`);
+    historyTable.innerHTML = `<tr><td colspan="4" class="empty-state">Gagal memfilter history: ${error.message}.</td></tr>`;
   }
 };
 
-// =======================
-// DELETE HISTORY (TIDAK ADA DI SETTING, HANYA DI HISTORY PAGE)
-// =======================
-// (Tidak ada kode delete di sini karena sudah dihapus dari setting, sesuai permintaan)
-
-// =======================
-// LOGOUT
-// =======================
+// --- Logout ---
 document.getElementById('logout-btn').onclick = async () => {
   try {
     await signOut(auth);
-    window.location.href = "index.html";  // Perbaikan: Hapus switch yang salah
+    window.location.href = "index.html";
   } catch (error) {
     console.error("Error logging out:", error);
-    if (error.code === 'auth/network-request-failed') {
-      alert("Gagal terhubung ke server. Periksa koneksi internet Anda.");
-    } else if (error.code === 'auth/user-not-found') {
-      alert("Pengguna tidak ditemukan. Coba login kembali.");
-    } else if (error.code === 'auth/too-many-requests') {
-      alert("Terlalu banyak percoba login. Coba lagi beberapa saat lagi.");
-    } else {
-      alert("Gagal logout. Coba lagi.");
-    }
+    alert("Gagal logout. Coba lagi.");
   }
 };
 
 // =======================
-// AUTH
+// AUTH INITIALIZATION
 // =======================
 onAuthStateChanged(auth, user => {
-  if (!user) return window.location.href = "index.html";
-
-  // Minta izin notifikasi saat user berhasil login
+  if (!user) {
+    window.location.href = "index.html";
+    return;
+  }
   requestNotificationPermission();
-
-  // Load pengaturan yang tersimpan
   loadSettings();
-
-  // Mulai listener
+  initializeTabs(); // Inisialisasi tab
   listenAlerts();
   renderHistory();
 });
