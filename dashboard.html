@@ -24,7 +24,6 @@
         <button id="logout-btn" class="logout-btn"><i class="fas fa-right-from-bracket"></i> Logout</button>
       </div>
       <div class="nav-right">
-        <!-- Dropdown Menu Settings -->
         <div class="dropdown">
           <button id="settings-toggle-btn" class="settings-btn">
             <i class="fas fa-cog"></i> <i class="fas fa-caret-down"></i>
@@ -66,10 +65,8 @@
     </nav>
   </header>
 
-  <!-- Container untuk memusatkan konten dan layout sticky footer -->
   <div class="container">
     <main>
-      <!-- DASHBOARD -->
       <section id="dashboard">
         <div class="section-header">
           <h2><i class="fas fa-bell"></i> Panggilan Aktif</h2>
@@ -78,7 +75,6 @@
         <div id="active-list">
           <p class="empty-state"><i class="fas fa-check-circle"></i> Tidak ada panggilan aktif saat ini.</p>
         </div>
-
         <div class="section-header">
           <h2><i class="fas fa-check-double"></i> Panggilan Selesai</h2>
           <p>Menampilkan semua permintaan yang sudah ditangani.</p>
@@ -88,46 +84,38 @@
         </div>
       </section>
 
-      <!-- HISTORY -->
       <section id="history" style="display:none;">
         <div class="section-header">
           <h2><i class="fas fa-clock-rotate-left"></i> Log Panggilan</h2>
           <p>Melihat dan mengelola riwayat semua panggilan.</p>
         </div>
-
         <div class="history-actions">
           <label for="filter-date"><i class="fas fa-calendar-day"></i> Filter tanggal:</label>
           <input type="date" id="filter-date">
           <button id="filter-btn"><i class="fas fa-filter"></i> Tampilkan</button>
-
-          <!-- Tambah menu hapus berdasarkan tanggal di history page -->
           <label for="delete-date"><i class="fas fa-trash-alt"></i> Hapus berdasarkan tanggal:</label>
           <input type="date" id="delete-date">
           <button id="delete-history-btn" class="btn-danger"><i class="fas fa-trash"></i> Hapus</button>
         </div>
-
         <table class="history-table">
-        <thead>
-          <tr>
-            <th><i class="fas fa-door-open"></i> Nomor Ruang</th>
-            <th><i class="fas fa-exclamation-triangle"></i> Jenis Alert</th>
-            <th><i class="fas fa-info-circle"></i> Status</th>
-            <th><i class="fas fa-clock"></i> Waktu</th>
-          </tr>
-        </thead>
-        <tbody id="history-table">
-        </tbody>
-      </table>
+          <thead>
+            <tr>
+              <th><i class="fas fa-door-open"></i> Nomor Ruang</th>
+              <th><i class="fas fa-exclamation-triangle"></i> Jenis Alert</th>
+              <th><i class="fas fa-info-circle"></i> Status</th>
+              <th><i class="fas fa-clock"></i> Waktu</th>
+            </tr>
+          </thead>
+          <tbody id="history-table"></tbody>
+        </table>
       </section>
     </main>
   </div>
 
-  <!-- 3. FOOTER DENGAN CLASS BARU UNTUK STYLING -->
   <footer class="site-footer">
     <p>&copy; 2024 CareAssist Notify. All Rights Reserved.</p>
   </footer>
 
-  <!-- MODAL KONFIRMASI CUSTOM -->
   <div id="confirm-modal" class="modal">
     <div class="modal-overlay" onclick="closeConfirmModal()"></div>
     <div class="modal-content">
