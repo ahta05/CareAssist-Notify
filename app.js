@@ -175,6 +175,8 @@ function buildCard(room, key, alert) {
   return card;
 }
 
+// ... (bagian atas file tetap sama) ...
+
 // =======================
 // MAIN LISTENER (PERBAIKAN LOGIKA NOTIFIKASI)
 // =======================
@@ -195,14 +197,16 @@ function listenAlerts() {
 
         const previousAlert = activeAlerts.get(alertKey);
 
-        // --- PERBAIKAN LOGIKA NOTIFIKASI DI SINI ---
-        // Hanya beri notifikasi jika alert adalah AKTIF dan merupakan data BARU atau data AKTIF yang DIPERBARUI.
+        // --- PERBAIKAN LOGIKA NOTIFIKASI YANG LEBIH KETAT ---
+        // Hanya beri notifikasi untuk alert yang statusnya AKTIF.
+        // Abaikan sepenuhnya transisi dari AKTIF -> DITANGANI.
         if (alert.status !== 'Ditangani') {
           // Kondisi 1: Alert ini benar-benar baru (tidak ada di snapshot sebelumnya)
           if (!previousAlert) {
             shouldNotify = true;
           }
-          // Kondisi 2: Alert sudah ada, tetapi timestamp-nya berubah (menandakan pembaruan)
+          // Kondisi 2: Alert sudah ada dan statusnya AKTIF, tetapi timestamp-nya berubah.
+          // Ini menandakan pembaruan pada alert yang masih relevan.
           else if (previousAlert.createdAt !== alert.createdAt) {
             shouldNotify = true;
           }
@@ -224,9 +228,14 @@ function listenAlerts() {
 
     if (shouldNotify && !isFirstLoad) {
       playNotificationSound();
-      const firstNewAlert = currentAlerts.entries().next().value;
-      if (firstNewAlert) {
-        const [alertKey, alertData] = firstNewAlert;
+      // Ambil alert pertama yang memicu notifikasi untuk ditampilkan
+      const newAlertEntry = [...currentAlerts.entries()].find(([key, alert]) => {
+          const prev = activeAlerts.get(key);
+          return (!prev || prev.createdAt !== alert.createdAt) && alert.status !== 'Ditangani';
+      });
+
+      if (newAlertEntry) {
+        const [alertKey, alertData] = newAlertEntry;
         const [room] = alertKey.split('/');
         showBrowserNotification('CareAssist Notify - Alert Baru!', {
           body: `Ada panggilan dari Ruang ${room.replace('room_', '')} (${alertData.type})`,
@@ -238,6 +247,8 @@ function listenAlerts() {
     isFirstLoad = false;
   });
 }
+
+// ... (sisa file tetap sama) ...
 
 // =======================
 // HISTORY (READ ONLY)
