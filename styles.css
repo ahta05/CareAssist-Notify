@@ -371,19 +371,67 @@ nav button:hover {
 @media (max-width: 600px) {
   body { padding: 10px; }
   h1 { font-size: 2.5rem; }
-  .card { padding: 20px; margin: 15px 0; }
-  .alert-icon { font-size: 2rem; width: 60px; height: 60px; }
-  .card-details-simple { min-width: 100%; }
-  .card-details-simple div { flex-direction: column; align-items: flex-start; }
-  .card-details-simple b { min-width: auto; margin-bottom: 4px; }
-  .card button { width: 100%; }
-  nav button { margin: 5px; padding: 10px 18px; font-size: 0.9rem; }
-  .history-actions { flex-direction: column; align-items: stretch; }
-  .history-actions label, .history-actions input[type="date"], .history-actions button, .history-actions .btn-danger {
-    width: 100%; margin-left: 0 !important; margin-bottom: 10px;
+  .card { 
+    padding: 15px; /* Kurangi dari 20px untuk hemat space vertikal */
+    margin: 10px 0; /* Kurangi dari 15px untuk lebih efisien */
+    flex-direction: column; /* Tetap vertikal untuk readability */
+    align-items: stretch;
+    text-align: center;
   }
-  .history-table { font-size: 0.8rem; }
-  .history-table th, .history-table td { padding: 10px 8px; }
+  .alert-icon { 
+    font-size: 2rem; 
+    width: 50px; /* Kurangi dari 60px agar tidak terlalu besar */
+    height: 50px; 
+    margin-right: 0; 
+    margin-bottom: 10px; /* Kurangi jarak bawah untuk kompak */
+    align-self: center; 
+  }
+  .card-details-container {
+    justify-content: center;
+    gap: 15px; /* Kurangi gap dari 20px */
+  }
+  .card-details-simple { 
+    min-width: 100%; 
+  }
+  .card-details-simple div { 
+    flex-direction: row; /* Ubah ke horizontal untuk label + nilai agar lebih efisien, tapi tetap readable */
+    align-items: flex-start; 
+    margin-bottom: 6px; /* Kurangi dari 8px untuk hemat tinggi */
+  }
+  .card-details-simple b { 
+    min-width: 70px; /* Kurangi dari 80px untuk lebih kompak */
+    margin-bottom: 0; /* Hapus margin bawah karena sekarang row */
+    margin-right: 8px; /* Kurangi dari 10px */
+  }
+  .footer {
+    margin-left: 0;
+    margin-top: 10px; /* Kurangi dari 15px */
+    align-self: center;
+  }
+  .card button { 
+    width: 100%; 
+    padding: 12px 20px; /* Kurangi padding dari 14px 24px untuk efisiensi */
+  }
+  nav button { 
+    margin: 5px; 
+    padding: 10px 16px; /* Kurangi padding dari 10px 18px */
+    font-size: 0.9rem; 
+  }
+  .history-actions { 
+    flex-direction: column; 
+    align-items: stretch; 
+  }
+  .history-actions label, .history-actions input[type="date"], .history-actions button, .history-actions .btn-danger {
+    width: 100%; 
+    margin-left: 0 !important; 
+    margin-bottom: 8px; /* Kurangi dari 10px untuk kompak */
+  }
+  .history-table { 
+    font-size: 0.8rem; 
+  }
+  .history-table th, .history-table td { 
+    padding: 8px 6px; /* Kurangi dari 10px 8px untuk hemat space */
+  }
 }
 
 /* ==========================================
